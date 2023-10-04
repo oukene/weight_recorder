@@ -1,0 +1,16 @@
+{
+  "domain": "weight_recorder",
+  "name": "Weight Recorder",
+  "config_flow": true,
+  "documentation": "https://github.com/oukene/weight_recorder",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@oukene"
+  ],
+  "iot_class": "",
+  "version": "1.0.0"
+}

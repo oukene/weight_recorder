@@ -1,0 +1,46 @@
+{
+    "title": "Weight Recorder",
+    "config": {
+        "step": {
+            "confirm": {
+                "description": "Do you want to set up?"
+            },
+            "user": {
+                "data": {
+                    "device_name": "Enter the device name to be created"
+                },
+                "description": "Click OK to add intergration"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "State Counter Options",
+                "data": {
+                    "add_another": "Select to add a entity"
+                },
+                "description": "If unchecked it will be deleted"
+            },
+            "entity": {
+                "title": "add a counter",
+                "data": {
+                    "origin_entity": "Enter the entity to be detected",
+                    "name": "Enter the name of the sensor to be created",
+                    "count_wait_time": "state change detected wait time(milliseconds) - ex) 1000ms = 1s)",
+                    "continuous_timer": "Retains the first timer even when the state changes",
+                    "count_max": "Please enter a maximum counter value"
+                }
+            },
+            "state": {
+                "title": "add operator",
+                "data": {
+                    "operator": "Enter an operator",
+                    "entity_state": "Enter the status value to be detected",
+                    "count_value": "Enter the number of counters to increment",
+                    "add_another": "add more operator"
+                }
+            }
+        }
+    }
+}

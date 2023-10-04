@@ -1,0 +1,46 @@
+{
+    "title": "Weight Recorder",
+    "config": {
+        "step": {
+            "confirm": {
+                "description": "\uc124\uce58\ud560\uae4c\uc694\u003f"
+            },
+            "user": {
+                "data": {
+                    "device_name": "\uc0dd\uc131\ud560\u0020\uae30\uae30\uc758\u0020\uc774\ub984\uc744\u0020\uc785\ub825\ud558\uc138\uc694"
+                },
+                "description": "\ud655\uc778\uc744\u0020\ub204\ub974\uba74\u0020\ud1b5\ud569\uad6c\uc131\uc694\uc18c\uac00\u0020\uc124\uce58\ub429\ub2c8\ub2e4"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "\uc0c1\ud0dc\u0020\uce74\uc6b4\ud130\u0020\uc124\uc815",
+                "data": {
+                    "add_another": "\uad6c\uc131\uc694\uc18c\ub97c\u0020\ucd94\uac00\ud569\ub2c8\ub2e4"
+                },
+                "description": "\uccb4\ud06c\ub97c\u0020\ud574\uc81c\ud558\uba74\u0020\uc0ad\uc81c\ub429\ub2c8\ub2e4"
+            },
+            "entity": {
+                "title": "\uce74\uc6b4\ud130\u0020\ucd94\uac00",
+                "data": {
+                    "origin_entity": "\uac10\uc9c0\ud560\u0020\uad6c\uc131\uc694\uc18c\uc758\u0020\u0069\u0064\u0020\ub97c\u0020\uc785\ub825\ud558\uc138\uc694",
+                    "name": "\uc0dd\uc131\ub420\u0020\uad6c\uc131\uc694\uc18c\uc758\u0020\uc774\ub984\uc744\u0020\uc785\ub825\ud558\uc138\uc694",
+                    "count_wait_time": "\uc0c1\ud0dc\u0020\ubcc0\uacbd\u0020\uac10\uc9c0\u0020\ub300\uae30\u0020\uc2dc\uac04\u0028\u006d\u0069\u006c\u006c\u0069\u0073\u0065\u0063\u006f\u006e\u0064\u0073\u0029\u0020\u002d\u0020\u0065\u0078\u0029\u0020\u0031\u0030\u0030\u0030\u006d\u0073\u0020\u003d\u0020\u0031\u0073\u0029\u000d",
+                    "continuous_timer": "\uc0c1\ud0dc\uac00\u0020\ubcc0\uacbd\ub418\uc5b4\ub3c4\u0020\uccab\ubc88\uc9f8\u0020\ud0c0\uc774\uba38\ub97c\u0020\uc720\uc9c0\ud569\ub2c8\ub2e4",
+                    "count_max": "\uce74\uc6b4\ud130\u0020\ucd5c\ub300\uac12\uc744\u0020\uc785\ub825\ud558\uc138\uc694"
+                }
+            },
+            "state": {
+                "title": "\uc5f0\uc0b0\uc790\u0020\ucd94\uac00",
+                "data": {
+                    "operator": "\uc5f0\uc0b0\uc790\ub97c\u0020\uc785\ub825\ud558\uc138\uc694\u000d",
+                    "entity_state": "\uac10\uc9c0\ud560\u0020\uc0c1\ud0dc\u0020\uac12\uc744\u0020\uc785\ub825\ud558\uc138\uc694\u002e\u000d",
+                    "count_value": "\uc99d\uac00\ud560\u0020\uce74\uc6b4\ud130\u0020\uc218\uce58\ub97c\u0020\uc785\ub825\ud558\uc138\uc694",
+                    "add_another": "\uc5f0\uc0b0\uc790\ub97c\u0020\ub354\u0020\ucd94\uac00\ud569\ub2c8\ub2e4"
+                }
+            }
+        }
+    }
+}
