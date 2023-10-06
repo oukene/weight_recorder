@@ -30,6 +30,5 @@ Unrecorded data can be manually added to member profiles
 <br>
 ![6.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/6.jpg)
 <br>
-
-
-
+![7.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/7.jpg)
+<br>
