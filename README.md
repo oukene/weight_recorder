@@ -19,11 +19,17 @@ If there are more than two people to record weight or there are no subjects, it 
 Unrecorded data can be manually added to member profiles
 
 ![1.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/1.jpg)
+<br>
 ![2.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/2.jpg)
+<br>
 ![3.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/3.jpg)
+<br>
 ![4.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/4.jpg)
+<br>
 ![5.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/5.jpg)
+<br>
 ![6.jpg](https://raw.githubusercontent.com/oukene/weight_recorder/main/images/6.jpg)
+<br>
 
 
 
