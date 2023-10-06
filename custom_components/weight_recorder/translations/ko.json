@@ -55,6 +55,17 @@
                     "bmi": {
                         "name": "\uccb4\uc9c8\ub7c9\u0020\uc9c0\uc218\u0028\u0062\u006d\u0069\u0029"
                     },
+                    "bmi_state": {
+                        "name": "비만도",
+                        "state": {
+                            "under": "저체중",
+                            "normal": "정상체중",
+                            "over": "과체중",
+                            "I_Obesity": "1단계 비만",
+                            "II_Obesity": "2단계 비만",
+                            "III_Obesity": "3단계 비만"
+                        }
+                    },
                     "birth": {
                         "name": "\ucd9c\uc0dd\uc77c"
                     },

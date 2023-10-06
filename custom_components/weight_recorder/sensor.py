@@ -78,8 +78,8 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         self._value = None
         self._attributes = {}
         if self._device.device_type == DeviceType.PROFILE:
-            self._attributes[CONF_HEIGHT] = device.configure.get(CONF_HEIGHT)
-            self._attributes[CONF_BIRTH] = device.configure.get(CONF_BIRTH)
+            self._attributes[ATTR_HEIGHT] = device.configure.get(CONF_HEIGHT)
+            self._attributes[ATTR_BIRTH] = device.configure.get(CONF_BIRTH)
 
         self._device.weight_entity = self
 
@@ -104,22 +104,38 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
     async def calc_attribute(self):
         # BMI calc
         if isNumber(self._value):
-            self._attributes["lbs"] = float(self._value) / 0.453592
+            self._attributes[ATTR_LBS] = float(self._value) / 0.453592
             if self._device.device_type == DeviceType.PROFILE:
-                height = float(self._attributes.get(CONF_HEIGHT))
+                height = float(self._attributes.get(ATTR_HEIGHT))
                 inch = height / 2.54
                 feet = math.floor(inch/12)
                 inch = round(inch - 12 * feet, 1)
-                self._attributes["height(ft/in)"] = str(feet) + "'" + str(inch) + '"'
+                self._attributes[ATTR_HEIGHT_FEET_INCH] = str(feet) + "'" + str(inch) + '"'
 
                 date_time_obj = datetime.strptime(self._attributes.get(CONF_BIRTH), "%Y-%m-%d")
                 age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
                 _LOGGER.debug("age : " + str(age))
-                self._attributes["age"] = age
+                self._attributes[ATTR_AGE] = age
                 
 
                 _LOGGER.debug("calc BMI - weight : " + str(self._value) + ", height : " + str(height))
-                self._attributes[CONF_BMI] = float(self._value) / (float(height/100) * float(height/100))
+                bmi = float(self._value) / (float(height/100) * float(height/100))
+                self._attributes[ATTR_BMI] = bmi
+                bmi_state = None
+                if bmi <= 18.5:
+                    bmi_state = "under"
+                elif bmi > 18.5 and bmi <= 25:
+                    bmi_state = "norma"
+                elif bmi > 25 and bmi <= 30:
+                    bmi_state = "over"
+                elif bmi > 30 and bmi <= 35:
+                    bmi_state = "I_Obesity"
+                elif bmi > 35 and bmi <= 40:
+                    bmi_state = "II_Obesity"
+                elif bmi > 40:
+                    bmi_state = "III_Obesity"
+
+                self._attributes[ATTR_BMI_STATE] = bmi_state
             
     async def async_added_to_hass(self):
         value = self._device.configure.get(CONF_WEIGHT)

@@ -55,6 +55,17 @@
                     "bmi": {
                         "name": "body mass index(bmi)"
                     },
+                    "bmi_state": {
+                        "name": "bmi state",
+                        "state": {
+                            "under":"under weight",
+                            "normal": "normal weight",
+                            "over": "over weight",
+                            "I_Obesity": "1 obesity",
+                            "II_Obesity": "2 obesity",
+                            "III_Obesity": "3 obesity"
+                        }
+                    },
                     "birth": {
                         "name": "date of birth"
                     },

@@ -38,6 +38,15 @@ CONF_USE_MANUAL_INPUT = "manual_input"
 
 ATTR_CONF = "configure"
 
+ATTR_BMI = "bmi"
+ATTR_BMI_STATE = "bmi_state"
+ATTR_HEIGHT_FEET_INCH = "height(ft/in)"
+ATTR_HEIGHT = "height"
+ATTR_AGE = "age"
+ATTR_LBS = "lbs"
+ATTR_BIRTH = "birth"
+
+
 class DeviceType(Enum):
     PROFILE = 0,
     HUB = 1
