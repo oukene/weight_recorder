@@ -56,14 +56,14 @@
                         "name": "\uccb4\uc9c8\ub7c9\u0020\uc9c0\uc218\u0028\u0062\u006d\u0069\u0029"
                     },
                     "bmi_state": {
-                        "name": "비만도",
+                        "name": "\ube44\ub9cc\ub3c4",
                         "state": {
-                            "under": "저체중",
-                            "normal": "정상체중",
-                            "over": "과체중",
-                            "I_Obesity": "1단계 비만",
-                            "II_Obesity": "2단계 비만",
-                            "III_Obesity": "3단계 비만"
+                            "under": "\uc800\uccb4\uc911",
+                            "normal": "\uc815\uc0c1\uccb4\uc911",
+                            "over": "\uacfc\uccb4\uc911",
+                            "I_Obesity": "\u0031\ub2e8\uacc4\u0020\ube44\ub9cc",
+                            "II_Obesity": "\u0032\ub2e8\uacc4\u0020\ube44\ub9cc",
+                            "III_Obesity": "\u0033\ub2e8\uacc4\u0020\ube44\ub9cc"
                         }
                     },
                     "birth": {
