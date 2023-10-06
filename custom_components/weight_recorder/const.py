@@ -1,6 +1,7 @@
 """Constants for the Detailed Hello World Push integration."""
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
+from enum import Enum
 
 # This is the internal name of the integration, it should also match the directory
 # name for the integration.
@@ -9,54 +10,37 @@ NAME = "Weight Recorder"
 VERSION = "1.0.0"
 MANUFACTURE = "oukene"
 
+TRANS_KEY_WEIGHT = "weight"
+TRANS_KEY_MANUAL_INPUT = "manual_input"
+TRANS_KEY_UNRECORDED_DATA = "unrecorded_data"
+TRANS_KEY_PROFILE_LIST = "profile_list"
+TRANS_KEY_UNRECORDED_INPUT = "unrecorded_input"
+TRANS_KEY_UNRECORDED_REMOVE = "unrecorded_remove"
+TRANS_KEY_UNRECORDED_CLEAR = "unrecorded_clear"
+
+
 CONF_WEIGHT_ENTITY = "weight_entity"
-CONF_NAME = "device_name"
-CONF_SOURCE_ENTITY = "origin_entity"
-
-CONF_COUNT_WAIT_TIME = "count_wait_time"
-CONF_CONTINUOUS_TIMER = "continuous_timer"
-
 CONF_ENTITIES = "entities"
-CONF_ADD_ANODHER = "add_another"
 CONF_NAME = "name"
-CONF_MAX_COUNT = "count_max"
-
+CONF_USE_UNRECORDED_DATA = "use_unrecorded_data"
 CONF_OPTIONS_SELECT = "options_select"
-
 CONF_SELECT_DEVICE = "select_device"
 CONF_DELETE_DEVICE = "delete_device"
 CONF_ADMIT_RANGE = "admit_range"
-
 CONF_MODIFY_CONF = "modify_conf"
-
 CONF_BIRTH = "birth"
 CONF_HEIGHT = "height"
 CONF_WEIGHT = "weight"
 CONF_BMI = "bmi"
-
 CONF_DEFAULT_UNIT = "kg"
 CONF_DEFAULT_ENTITY_NAME = "weight"
+CONF_USE_MANUAL_INPUT = "manual_input"
 
 ATTR_CONF = "configure"
 
-CONF_ENTITY_STATE = "entity_state"
-CONF_OPERATOR = "operator"
-CONF_COUNT_VALUE = "count_value"
-CONF_STATE = "state"
+class DeviceType(Enum):
+    PROFILE = 0,
+    HUB = 1
 
 
-NUMBER_MIN = 0
-NUMBER_MAX = 10
 
-EQUAL = "equal"
-NOT_EQUAL = "not equal"
-BIGGER_THAN = "bigger than"
-SMALLER_THAN = "smaller than"
-
-
-OPERATOR_TYPES = [
-    EQUAL,
-    NOT_EQUAL,
-    BIGGER_THAN,
-    SMALLER_THAN
-]

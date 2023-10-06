@@ -11,6 +11,7 @@ from homeassistant.helpers.entity import async_generate_entity_id
 from datetime import datetime
 from .const import *
 from .hub import *
+import re
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,11 +37,45 @@ async def async_setup_entry(hass, entry, async_add_devices):
     devices = hub.devices
     _LOGGER.debug("devices : " + str(devices))
 
+    # device_registry = dr.async_get(hass)
+    # devices = dr.async_entries_for_config_entry(device_registry, entry.entry_id)
+
+    profile_list = {}
+    entities = er.async_entries_for_config_entry(er.async_get(hass), entry.entry_id)
+    # device_registry = dr.async_get(hass)
+    # for d in dr.async_entries_for_config_entry(device_registry, entry.entry_id):
+    #     _LOGGER.debug("device info : " + str(d))
+    #     if d.name != "Hub":
+    #         profile_list[d.id] = d.name_by_user if d.name_by_user != None else d.name
+
+    for e in entities:
+        if e.translation_key == TRANS_KEY_WEIGHT:
+            device = dr.async_get(hass).async_get(e.device_id)
+            if not re.search("_Hub", device.name):
+                profile_list[e.entity_id] = device.name_by_user if device.name_by_user != None else device.name
+
+    # for e in entities:
+    #     _LOGGER.debug("entity info : " + str(e))
+    #     device_reg = dr.async_get(hass)
+    #     device = device_reg.async_get(e.device_id)
+    #     _LOGGER.debug("device info : " + str(device))
+    #         device.name_by_user if device.name_by_user != None else device.name
+    #profile_list = hub.weight_entities
+    # for device_id, device in devices.items():
+    #     if not device.isHub():
+    #         _LOGGER.debug("find device : " + str(device))
+    #         profile_list.append(device.name)
+
+
     for device_id, device in devices.items():
-        _LOGGER.debug("find device id : " + str(device.device_id))
-        _LOGGER.debug("conf : " + str(device.configure))
-        s = WeightRecorderSelect(hass, entry, device)
-        new_devices.append(s)
+        _LOGGER.debug("device_id : " + str(device.device_id))
+        if entry.options.get(CONF_USE_UNRECORDED_DATA):
+            if device.isHub():
+                s = WeightRecorderSelect(hass, entry, device, translation_key=TRANS_KEY_UNRECORDED_DATA, options={})
+                new_devices.append(s)
+
+                s = WeightRecorderSelect(hass, entry, device, translation_key=TRANS_KEY_PROFILE_LIST, options=profile_list)
+                new_devices.append(s)
 
     if new_devices:
         async_add_devices(new_devices)
@@ -49,39 +84,47 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WeightRecorderSelect(EntityBase, SelectEntity):
     """Representation of a Thermal Comfort Sensor."""
 
-    def __init__(self, hass, entry, device):
+    def __init__(self, hass, entry, device, translation_key, options):
         """Initialize the sensor."""
-        super().__init__(device)
+        super().__init__(device, translation_key=translation_key)
         self.entry = entry
         self.hass = hass
         _LOGGER.debug("configure : " + str(device.configure))
 
         self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, "unrecorded data"), hass=hass)
+            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, translation_key), hass=hass)
         _LOGGER.debug("entity id : " + str(self.entity_id))
-        self._name = "{}".format("unrecorded data")
+        #self._name = "{}".format("unrecorded data")
         self._attributes = {}
-        self._unique_id = entry.entry_id + "." + self._device.name + "." + "unrecorded_data"
+        self._unique_id = entry.entry_id + "." + self._device.name + "." + translation_key
         self._device = device
-        self._options = []
-        for key, value in entry.options.get("unrecorded_data").items():
-            _LOGGER.debug("key : " + str(key))
-            date_time_obj = datetime.strptime(key, "%Y-%m-%d %H:%M:%S")
-            self._options.append(date_time_obj.strftime('%Y-%m-%d %H:%M:%S') + " - " + value)
+        self._profiles = options
+        self._options = list(options.values())
 
-        #self._options = list(entry.options.get("unrecorded_data").values())
+        hub = hass.data[DOMAIN][entry.entry_id]["hub"]
+
+        if self._translation_key == TRANS_KEY_UNRECORDED_DATA:
+            for key, value in entry.options.get(TRANS_KEY_UNRECORDED_DATA, {}).items():
+                _LOGGER.debug("key : " + str(key))
+                date_time_obj = datetime.strptime(key, "%Y-%m-%d %H:%M:%S")
+                self._options.append(date_time_obj.strftime('%Y-%m-%d %H:%M:%S') + " - " + value)
+            
+            hub.unrecorded_entity = self
+        elif self._translation_key == TRANS_KEY_PROFILE_LIST:
+            hub.profile_list_entity = self
+            #self._options = list(entry.options.get("unrecorded_data").values())
         self._current_option = self._options[0] if len(self._options) > 0 else None
-
-        self._hub = hass.data[DOMAIN][entry.entry_id]["hub"]
-        self._device.unrecorded_entity = self
 
     # def unique_id(self):
     #    """Return Unique ID string."""
     #    return self.unique_id
 
     async def async_add_option(self, option):        
-        entry_options = self.entry.options        
-        entry_options["unrecorded_data"][datetime.now().strftime('%Y-%m-%d %H:%M:%S')] = (str(option))
+        entry_options = self.entry.options
+        # if not entry_options.get(TRANS_KEY_UNRECORDED_DATA):
+        #     entry_options[TRANS_KEY_UNRECORDED_DATA] = {}
+
+        entry_options[TRANS_KEY_UNRECORDED_DATA][datetime.now().strftime('%Y-%m-%d %H:%M:%S')] = (str(option))
         _LOGGER.debug("entry_options : " + str(entry_options))
 
         self.hass.config_entries.async_update_entry(
@@ -89,14 +132,15 @@ class WeightRecorderSelect(EntityBase, SelectEntity):
             options={
                 CONF_WEIGHT_ENTITY: entry_options.get(CONF_WEIGHT_ENTITY),
                 CONF_ENTITIES: entry_options.get(CONF_ENTITIES),
-                "unrecorded_data": entry_options.get("unrecorded_data"),
+                TRANS_KEY_UNRECORDED_DATA: entry_options.get(TRANS_KEY_UNRECORDED_DATA),
+                CONF_USE_UNRECORDED_DATA: entry_options.get(CONF_USE_UNRECORDED_DATA),
                 "modifydatetime": datetime.now(),
             }
         )
 
     async def async_remove_option(self, option):
         entry_options = self.entry.options
-        del entry_options["unrecorded_data"][option]
+        del entry_options[TRANS_KEY_UNRECORDED_DATA][option]
         _LOGGER.debug("entry_options : " + str(entry_options))
 
         self.hass.config_entries.async_update_entry(
@@ -104,7 +148,8 @@ class WeightRecorderSelect(EntityBase, SelectEntity):
             options={
                 CONF_WEIGHT_ENTITY: entry_options.get(CONF_WEIGHT_ENTITY),
                 CONF_ENTITIES: entry_options.get(CONF_ENTITIES),
-                "unrecorded_data": entry_options.get("unrecorded_data"),
+                TRANS_KEY_UNRECORDED_DATA: entry_options.get(TRANS_KEY_UNRECORDED_DATA),
+                CONF_USE_UNRECORDED_DATA: entry_options.get(CONF_USE_UNRECORDED_DATA),
                 "modifydatetime": datetime.now(),
             }
         )

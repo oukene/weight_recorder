@@ -42,10 +42,14 @@ async def async_setup_entry(hass, entry, async_add_devices):
     for device_id, device in devices.items():
         _LOGGER.debug("find device id : " + str(device.device_id))
         _LOGGER.debug("conf : " + str(device.configure))
-        s = WeightRecorderButton(hass, entry.entry_id, device, "unrecorded input")
-        new_devices.append(s)
-        s = WeightRecorderButton(hass, entry.entry_id, device, "unrecorded remove")
-        new_devices.append(s)
+        if entry.options.get(CONF_USE_UNRECORDED_DATA):
+            if device.isHub():
+                s = WeightRecorderButton(hass, entry.entry_id, device, TRANS_KEY_UNRECORDED_INPUT)
+                new_devices.append(s)
+                s = WeightRecorderButton(hass, entry.entry_id, device, TRANS_KEY_UNRECORDED_REMOVE)
+                new_devices.append(s)
+                s = WeightRecorderButton(hass, entry.entry_id, device, TRANS_KEY_UNRECORDED_CLEAR)
+                new_devices.append(s)
 
     if new_devices:
         async_add_devices(new_devices)
@@ -54,21 +58,21 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WeightRecorderButton(EntityBase, ButtonEntity):
     """Representation of a Thermal Comfort Sensor."""
 
-    def __init__(self, hass, entry_id, device, type):
+    def __init__(self, hass, entry_id, device, translation_key):
         """Initialize the sensor."""
-        super().__init__(device)
+        EntityBase.__init__(self, device, translation_key=translation_key)
         self.entry_id = entry_id
         self.hass = hass
         _LOGGER.debug("configure : " + str(device.configure))
 
         self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, type), hass=hass)
+            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, translation_key), hass=hass)
         _LOGGER.debug("entity id : " + str(self.entity_id))
-        self._name = "{}".format(type)
+        self._name = "{}".format(translation_key)
         self._attributes = {}
         self._unique_id = self.entity_id
         self._device = device
-        self._type = type
+        self._translation_key = translation_key
 
         self._hub = hass.data[DOMAIN][entry_id]["hub"]
 
@@ -78,11 +82,15 @@ class WeightRecorderButton(EntityBase, ButtonEntity):
 
     async def async_press(self) -> None:
         """Change the selected option."""
-        if self._type == "unrecorded input":
-            key = self._device.unrecorded_entity.current_option.split(" - ")[0]
-            value = self._device.unrecorded_entity.current_option.split(" - ")[1]
-            await self._device.weight_entity.async_set_value(float(value))
+        hub = self.hass.data[DOMAIN][self.entry_id]["hub"]
+        if self._translation_key == TRANS_KEY_UNRECORDED_INPUT:
+            await hub.record_data()
+        elif self._translation_key == TRANS_KEY_UNRECORDED_REMOVE:
+            await hub.remove_data()
+        elif self._translation_key == TRANS_KEY_UNRECORDED_CLEAR:
+            await hub.clear_data()
+            #await self._device.weight_entity.async_set_value(float(value))
 
-        await self._device.unrecorded_entity.async_remove_option(key)
+        #await self._device.unrecorded_entity.async_remove_option(time)
 
 

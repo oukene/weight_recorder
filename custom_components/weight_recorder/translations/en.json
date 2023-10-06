@@ -3,43 +3,103 @@
     "config": {
         "step": {
             "confirm": {
-                "description": "Do you want to set up?"
+                "description": "Should I install it?"
             },
             "user": {
                 "data": {
-                    "device_name": "Enter the device name to be created"
+                    "name": "Enter the name of the integration you want to create"
                 },
-                "description": "Click OK to add intergration"
+                "description": "Click OK to install"
             }
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "State Counter Options",
+                "title": "Weight Recorder configuration options",
                 "data": {
-                    "add_another": "Select to add a entity"
+                    "weight_entity": "Choose the weight component of your scale",
+                    "options_select": "What to do?",
+                    "use_unrecorded_data": "Activate unrecorded data management function"
                 },
-                "description": "If unchecked it will be deleted"
+                "description": ""
+            },
+            "select": {
+                "title": "Edit member profile",
+                "data": {
+                    "select_device": "Select the profile you want to edit",
+                    "delete_device": "Delete the selected profile"
+                }
             },
             "entity": {
-                "title": "add a counter",
+                "title": "Member Profile",
                 "data": {
-                    "origin_entity": "Enter the entity to be detected",
-                    "name": "Enter the name of the sensor to be created",
-                    "count_wait_time": "state change detected wait time(milliseconds) - ex) 1000ms = 1s)",
-                    "continuous_timer": "Retains the first timer even when the state changes",
-                    "count_max": "Please enter a maximum counter value"
+                    "name": "name",
+                    "birth": "birth date",
+                    "height": "current height",
+                    "weight": "current weight",
+                    "admit_range": "admit range of measured values",
+                    "manual_input": "Activate manual input function"
                 }
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "weight": {
+                "name": "weight",
+                "state_attributes": {
+                    "height": {
+                        "name": "height(cm)"
+                    },
+                    "bmi": {
+                        "name": "body mass index(bmi)"
+                    },
+                    "birth": {
+                        "name": "date of birth"
+                    },
+                    "age": {
+                        "name": "age"
+                    },
+                    "lbs": {
+                        "name": "pound(lbs)"
+                    },
+                    "height(ft/in)": {
+                        "name": "height(ft/in)"
+                    }
+                }
+            }
+        },
+        "number": {
+            "manual_input": {
+                "name": "manual recording"
+            }
+        },
+        "select": {
+            "unrecorded_data": {
+                "name": "Unentered record"
             },
-            "state": {
-                "title": "add operator",
-                "data": {
-                    "operator": "Enter an operator",
-                    "entity_state": "Enter the status value to be detected",
-                    "count_value": "Enter the number of counters to increment",
-                    "add_another": "add more operator"
-                }
+            "profile_list": {
+                "name": "Member List"
+            }
+        },
+        "button": {
+            "unrecorded_input": {
+                "name": "Record to selected profile"
+            },
+            "unrecorded_remove": {
+                "name": "Delete selected data"
+            },
+            "unrecorded_clear": {
+                "name": "delete all"
+            }
+        }
+    },
+    "selector": {
+        "option_select": {
+            "options": {
+                "add profile": "Add member profile",
+                "modify profile": "Edit member profile"
             }
         }
     }

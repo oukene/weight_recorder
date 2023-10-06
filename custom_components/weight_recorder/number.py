@@ -43,8 +43,9 @@ async def async_setup_entry(hass, entry, async_add_devices):
     for device_id, device in devices.items():
         _LOGGER.debug("find device id : " + str(device.device_id))
         _LOGGER.debug("conf : " + str(device.configure))
-        s = WeightRecorderNumber(hass, entry.entry_id, device)
-        new_devices.append(s)
+        if not device.isHub() and device.configure.get(CONF_USE_MANUAL_INPUT, False):
+            s = WeightRecorderNumber(hass, entry.entry_id, device, translation_key=TRANS_KEY_MANUAL_INPUT)
+            new_devices.append(s)
 
     if new_devices:
         async_add_devices(new_devices)
@@ -53,9 +54,9 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WeightRecorderNumber(EntityBase, NumberEntity):
     """Representation of a Thermal Comfort Sensor."""
 
-    def __init__(self, hass, entry_id, device):
+    def __init__(self, hass, entry_id, device, translation_key):
         """Initialize the sensor."""
-        super().__init__(device)
+        super().__init__(device, translation_key=translation_key)
         self.entry_id = entry_id
         self.hass = hass
         _LOGGER.debug("configure : " + str(device.configure))
