@@ -28,6 +28,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
     # Ensure our name space for storing objects is a known type. A dict is
     # common/preferred as it allows a separate instance of your class for each
     # instance that has been created in the UI.
+    _LOGGER.debug("call async_setup")
     hass.data.setdefault(DOMAIN, {})
 
     return True
@@ -40,7 +41,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("call async_setup_entry")
     #hass.data[DOMAIN][entry.entry_id] = DOMAIN
     #hass.data[DOMAIN][entry.entry_id] = {}
-    hass_loading = hass.data[DOMAIN].get(entry.entry_id, {}).get("hass_loading", False)
+    hass_loading = hass.data[DOMAIN].get(entry.entry_id, {}).get("hass_loading", True)
     hass.data[DOMAIN][entry.entry_id] = {}
     hass.data[DOMAIN][entry.entry_id]["hass_loading"] = hass_loading
 
