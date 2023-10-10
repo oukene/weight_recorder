@@ -154,6 +154,8 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         
         await self.async_update_ha_state(True)
 
+        self._hub.add_weight_entity(self)
+
     def check_range(self, value: float) -> bool:
         return _in_range(float(value), float(self._value) - float(self._admit_range), float(self._value) + float(self._admit_range))
 
@@ -166,6 +168,9 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         await self.calc_attribute()
 
         await self.async_update_ha_state(True)
+
+        if self._device.device_type == DeviceType.HUB:
+            self._hub.last_weight = value
 
     # async def entity_listener(self, entity, old_state, new_state):
     #     if _is_valid_state(new_state):

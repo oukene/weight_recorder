@@ -41,9 +41,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("call async_setup_entry")
     #hass.data[DOMAIN][entry.entry_id] = DOMAIN
     #hass.data[DOMAIN][entry.entry_id] = {}
-    hass_loading = hass.data[DOMAIN].get(entry.entry_id, {}).get("hass_loading", True)
+    #hass_loading = hass.data[DOMAIN].get(entry.entry_id, {}).get("hass_loading", True)
     hass.data[DOMAIN][entry.entry_id] = {}
-    hass.data[DOMAIN][entry.entry_id]["hass_loading"] = hass_loading
+    #hass.data[DOMAIN][entry.entry_id]["hass_loading"] = hass_loading
 
     hass.data[DOMAIN][entry.entry_id]["listener"] = []
 

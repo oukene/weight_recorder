@@ -6,6 +6,8 @@ import logging
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.const import STATE_UNKNOWN, STATE_UNAVAILABLE, EVENT_HOMEASSISTANT_STARTED
 
+from decimal import Decimal
+
 from homeassistant.helpers import (
     device_registry as dr,
     entity_platform,
@@ -31,7 +33,9 @@ def _is_valid_state(state) -> bool:
 def _in_range(n, start, end=0):
     return start <= n <= end if end >= start else end <= n <= start
 
+
 _LOGGER = logging.getLogger(__name__)
+
 
 class EntityBase(Entity):
     """Base representation of a Hello World Sensor."""
@@ -89,14 +93,16 @@ class EntityBase(Entity):
         """Return entity specific state attributes."""
         return self._attributes
 
+
 class Device:
     def __init__(self, hass, name, config, conf, device_type):
         self._id = f"{name}_{config.entry_id}"
-        #self._id = f"{name}_{config.entry_id}"
+        # self._id = f"{name}_{config.entry_id}"
         self._name = name
         self._callbacks = set()
         self._loop = asyncio.get_event_loop()
-        self._conf = conf.get(CONF_MODIFY_CONF) if conf.get(CONF_MODIFY_CONF) else conf
+        self._conf = conf.get(CONF_MODIFY_CONF) if conf.get(
+            CONF_MODIFY_CONF) else conf
         self.firmware_version = VERSION
         self.model = NAME
         self.manufacturer = MANUFACTURE
@@ -169,24 +175,28 @@ class Hub:
         self.hass = hass
         self.entry = entry
         self._weight_entity_id = weight_entity_id
+        self.last_weight = None
         self.__unrecorded_select_entity = None
         self.__profile_list_entity = None
+        self.__weight_entities = {}
         self.setup()
 
     def setup(self):
         self.hass.data[DOMAIN][self.entry.entry_id]["listener"].append(
             async_track_state_change(self.hass, self._weight_entity_id, self.entity_listener))
 
-        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, self.hass_load_end)
+        #self.hass.bus.async_listen_once(
+        #    EVENT_HOMEASSISTANT_STARTED, self.hass_load_end)
 
     async def hass_load_end(self, event):
-        self.hass.data[DOMAIN][self.entry.entry_id]["hass_loading"] = True
-        _LOGGER.debug("hass load end!!")
-        #self._hass_load_end = True
+        """"""
+        #self.hass.data[DOMAIN][self.entry.entry_id]["hass_loading"] = True
+        #_LOGGER.debug("hass load end!!")
+        # self._hass_load_end = True
 
     async def entity_listener(self, entity, old_state, new_state):
         _LOGGER.debug("call entity_listener")
-        if not _is_valid_state(new_state) or not self.hass.data[DOMAIN][self.entry.entry_id].get("hass_loading", False):
+        if not _is_valid_state(new_state) or self.last_weight == new_state.state or Decimal(new_state.state) == Decimal(0):
             return
         in_range_count = 0
         submit_entity = None
@@ -196,15 +206,15 @@ class Hub:
                 if device.device_type == DeviceType.HUB:
                     await device.weight_entity.async_set_value(new_state.state)
                     continue
+                elif device.device_type == DeviceType.PROFILE:
+                    if device.weight_entity.check_range(new_state.state):
+                        in_range_count += 1
+                        submit_entity = device.weight_entity
 
-                if device.weight_entity.check_range(new_state.state):
-                    in_range_count += 1
-                    submit_entity = device.weight_entity
-        
         if in_range_count == 1:
             await submit_entity.async_set_value(new_state.state)
         else:
-            #unrecorded data process
+            # unrecorded data process
             _LOGGER.debug("call async_add_option")
             if self.unrecorded_entity:
                 await self.unrecorded_entity.async_add_option(new_state.state)
@@ -227,9 +237,11 @@ class Hub:
         #             # unrecorded data process
         #             self._hub.add_unrecorded_data(value)
 
-
-    def add_device(self, device:Device) -> None:
+    def add_device(self, device: Device) -> None:
         self.__devices[device.device_id] = device
+    
+    def add_weight_entity(self, entity):
+        self.__weight_entities[entity.entity_id] = entity
 
     @property
     def profile_list_entity(self):
@@ -259,7 +271,7 @@ class Hub:
         return entities
 
     @property
-    def device(self, device_id:str) -> Device:
+    def device(self, device_id: str) -> Device:
         return self.__devices.get(device_id, None)
 
     @property
@@ -278,29 +290,29 @@ class Hub:
         for entity_id, profile in self.profile_list_entity._profiles.items():
             if profile == self.profile_list_entity.current_option:
                 _LOGGER.debug("select profile entity id : " + entity_id)
-                entity_reg = er.async_get(self.hass)
-                entity = entity_reg.async_get(entity_id)
-                _LOGGER.debug("select entity info : " + str(entity))
-                state = self.hass.states.get(entity_id)
-                state.state = float(value)
-                self.hass.states.async_set(entity_id, state.state, state.attributes)
+                # entity_reg = er.async_get(self.hass)
+                # entity = entity_reg.async_get(entity_id)
+                # _LOGGER.debug("select entity info : " + str(entity))
+                # state = self.hass.states.get(entity_id)
+                # state.state = float(value)
+                if entity := self.__weight_entities[entity_id]:
+                    await entity.async_set_value(float(value))
+                #self.hass.states.set(
+                #    entity_id, state.state, state.attributes)
                 await self.remove_data()
 
-                #entity.async_set_value(float(value))
-                #self._device.weight_entity.async_set_value(float(value))
-            
+                # entity.async_set_value(float(value))
+                # self._device.weight_entity.async_set_value(float(value))
 
     async def remove_data(self):
         """"""
         time = self.unrecorded_entity.current_option.split(" - ")[0]
         _LOGGER.debug("call remove_data : " + str(time))
         await self.unrecorded_entity.async_remove_option(time)
-    
+
     async def clear_data(self):
         """"""
         datas = []
         for option in self.unrecorded_entity.options:
             time = option.split(" - ")[0]
             await self.unrecorded_entity.async_remove_option(time)
-
-
