@@ -125,7 +125,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                 if bmi <= 18.5:
                     bmi_state = "under"
                 elif bmi > 18.5 and bmi <= 25:
-                    bmi_state = "norma"
+                    bmi_state = "normal"
                 elif bmi > 25 and bmi <= 30:
                     bmi_state = "over"
                 elif bmi > 30 and bmi <= 35:
