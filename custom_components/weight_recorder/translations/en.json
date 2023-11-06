@@ -38,7 +38,9 @@
                     "birth": "birth date",
                     "height": "current height",
                     "weight": "current weight",
-                    "admit_range": "admit range of measured values",
+                    "gender": "input gender",
+                    "admit_weight_range": "admit range of weight measured values",
+                    "admit_imp_range": "admit range of impedance measured values",
                     "manual_input": "Activate manual input function"
                 }
             }
@@ -58,7 +60,7 @@
                     "bmi_state": {
                         "name": "bmi state",
                         "state": {
-                            "under":"under weight",
+                            "under": "under weight",
                             "normal": "normal weight",
                             "over": "over weight",
                             "I_Obesity": "1 obesity",
@@ -79,6 +81,45 @@
                         "name": "height(ft/in)"
                     }
                 }
+            },
+            "height": {
+                "name": "height"
+            },
+            "basal_metabolism": {
+                "name": "basal metabolism"
+            },
+            "body_fat": {
+                "name": "body fat"
+            },
+            "muscle mass": {
+                "name": "muscle mass"
+            },
+            "water": {
+                "name": "water"
+            },
+            "bone_mass": {
+                "name": "bone mass"
+            },
+            "lean_body_mass": {
+                "name": "lean body mass"
+            },
+            "visceral_fat": {
+                "name": "visceral fat"
+            },
+            "protein": {
+                "name": "protein"
+            },
+            "bmi": {
+                "name": "bmi"
+            },
+            "body_score": {
+                "name": "body score"
+            },
+            "metabolic_age": {
+                "name": "metabolic age"
+            },
+            "impedance": {
+                "name": "impedance"
             }
         },
         "number": {
@@ -110,7 +151,15 @@
         "option_select": {
             "options": {
                 "add profile": "Add member profile",
-                "modify profile": "Edit member profile"
+                "modify profile": "Edit member profile",
+                "add weight entity": "Add Scale Device",
+                "modify weight entity": "Modify Scale Device"
+            }
+        },
+        "gender": {
+            "options": {
+                "male": "male",
+                "female": "female"
             }
         }
     }

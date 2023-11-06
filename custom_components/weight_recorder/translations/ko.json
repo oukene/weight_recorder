@@ -1,45 +1,47 @@
 {
-    "title": "\uccb4\uc911\u0020\uae30\ub85d\uae30",
+    "title": "\uccb4\uc911 \uae30\ub85d\uae30",
     "config": {
         "step": {
             "confirm": {
-                "description": "\uc124\uce58\ud560\uae4c\uc694\u003f"
+                "description": "\uc124\uce58\ud560\uae4c\uc694?"
             },
             "user": {
                 "data": {
-                    "name": "\uc0dd\uc131\ud560\u0020\ud1b5\ud569\u0020\uad6c\uc131\uc694\uc18c\uc758\u0020\uc774\ub984\uc744\u0020\uc785\ub825\ud558\uc138\uc694"
+                    "name": "\uc0dd\uc131\ud560 \ud1b5\ud569 \uad6c\uc131\uc694\uc18c\uc758 \uc774\ub984\uc744 \uc785\ub825\ud558\uc138\uc694"
                 },
-                "description": "\ud655\uc778\uc744\u0020\ub204\ub974\uba74\u0020\uc124\uce58\ud569\ub2c8\ub2e4"
+                "description": "\ud655\uc778\uc744 \ub204\ub974\uba74 \uc124\uce58\ud569\ub2c8\ub2e4"
             }
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "\uccb4\uc911\u0020\uae30\ub85d\uae30\u0020\uad6c\uc131\uc635\uc158",
+                "title": "\uccb4\uc911 \uae30\ub85d\uae30 \uad6c\uc131\uc635\uc158",
                 "data": {
-                    "weight_entity": "\uccb4\uc911\uacc4\uc758\u0020\uccb4\uc911\u0020\uad6c\uc131\uc694\uc18c\ub97c\u0020\uc120\ud0dd\ud558\uc138\uc694",
-                    "options_select": "\ubb34\uc5c7\uc744\u0020\ud560\uae4c\uc694\u003f",
-                    "use_unrecorded_data": "\ubbf8\uae30\ub85d\u0020\ub370\uc774\ud130\u0020\uad00\ub9ac\u0020\uae30\ub2a5\uc744\u0020\ud65c\uc131\ud654\u0020\ud569\ub2c8\ub2e4"
+                    "weight_entity": "\uccb4\uc911\uacc4\uc758 \uccb4\uc911 \uad6c\uc131\uc694\uc18c\ub97c \uc120\ud0dd\ud558\uc138\uc694",
+                    "options_select": "\ubb34\uc5c7\uc744 \ud560\uae4c\uc694?",
+                    "use_unrecorded_data": "\ubbf8\uae30\ub85d \ub370\uc774\ud130 \uad00\ub9ac \uae30\ub2a5\uc744 \ud65c\uc131\ud654 \ud569\ub2c8\ub2e4"
                 },
                 "description": ""
             },
             "select": {
-                "title": "\uad6c\uc131\uc6d0\u0020\ud504\ub85c\ud544\u0020\uc218\uc815",
+                "title": "\uad6c\uc131\uc6d0 \ud504\ub85c\ud544 \uc218\uc815",
                 "data": {
-                    "select_device": "\uc218\uc815\ud560\u0020\ud504\ub85c\ud544\uc744\u0020\uc120\ud0dd\ud558\uc138\uc694",
-                    "delete_device": "\uc120\ud0dd\ub41c\u0020\uad6c\uc131\uc6d0\uc744\u0020\uc0ad\uc81c\ud569\ub2c8\ub2e4\u000d"
+                    "select_device": "\uc218\uc815\ud560 \ud504\ub85c\ud544\uc744 \uc120\ud0dd\ud558\uc138\uc694",
+                    "delete_device": "\uc120\ud0dd\ub41c \uad6c\uc131\uc6d0\uc744 \uc0ad\uc81c\ud569\ub2c8\ub2e4\r"
                 }
             },
             "entity": {
-                "title": "\uad6c\uc131\uc6d0\u0020\ud504\ub85c\ud544",
+                "title": "\uad6c\uc131\uc6d0 \ud504\ub85c\ud544",
                 "data": {
                     "name": "\uc774\ub984",
                     "birth": "\uc0dd\ub144\uc6d4\uc77c",
-                    "height": "\ud604\uc7ac\u0020\ud0a4",
-                    "weight": "\ud604\uc7ac\u0020\uccb4\uc911",
-                    "admit_range": "\uce21\uc815\uac12\uc758\u0020\uc778\uc815\u0020\ubc94\uc704",
-                    "manual_input": "\uc218\ub3d9\u0020\uc785\ub825\u0020\uae30\ub2a5\uc744\u0020\ud65c\uc131\ud654\u0020\ud569\ub2c8\ub2e4"
+                    "height": "\ud604\uc7ac \ud0a4",
+                    "weight": "\ud604\uc7ac \uccb4\uc911",
+                    "gender": "\uc131\ubcc4\uc744 \uc785\ub825\ud558\uc138\uc694",
+                    "admit_weight_range": "\uccb4\uc911 \uce21\uc815\uac12\uc758 \uc778\uc815\ubc94\uc704",
+                    "admit_imp_range": "\uc800\ud56d(\uc784\ud53c\ub358\uc2a4)\uce21\uc815\uac12\uc758 \uc778\uc815\ubc94\uc704",
+                    "manual_input": "\uc218\ub3d9 \uc785\ub825 \uae30\ub2a5\uc744 \ud65c\uc131\ud654 \ud569\ub2c8\ub2e4"
                 }
             }
         }
@@ -47,13 +49,13 @@
     "entity": {
         "sensor": {
             "weight": {
-                "name": "\uccb4\uc911",
+                "name": "\ubab8\ubb34\uac8c",
                 "state_attributes": {
                     "height": {
-                        "name": "\ud0a4\u0028\u0063\u006d\u0029"
+                        "name": "\ud0a4(cm)"
                     },
                     "bmi": {
-                        "name": "\uccb4\uc9c8\ub7c9\u0020\uc9c0\uc218\u0028\u0062\u006d\u0069\u0029"
+                        "name": "\uccb4\uc9c8\ub7c9 \uc9c0\uc218(bmi)"
                     },
                     "bmi_state": {
                         "name": "\ube44\ub9cc\ub3c4",
@@ -61,9 +63,9 @@
                             "under": "\uc800\uccb4\uc911",
                             "normal": "\uc815\uc0c1\uccb4\uc911",
                             "over": "\uacfc\uccb4\uc911",
-                            "I_Obesity": "\u0031\ub2e8\uacc4\u0020\ube44\ub9cc",
-                            "II_Obesity": "\u0032\ub2e8\uacc4\u0020\ube44\ub9cc",
-                            "III_Obesity": "\u0033\ub2e8\uacc4\u0020\ube44\ub9cc"
+                            "I_Obesity": "1\ub2e8\uacc4 \ube44\ub9cc",
+                            "II_Obesity": "2\ub2e8\uacc4 \ube44\ub9cc",
+                            "III_Obesity": "3\ub2e8\uacc4 \ube44\ub9cc"
                         }
                     },
                     "birth": {
@@ -73,45 +75,91 @@
                         "name": "\ub098\uc774"
                     },
                     "lbs": {
-                        "name": "\ud30c\uc6b4\ub4dc\u0028\u006c\u0062\u0073\u0029"
+                        "name": "\ud30c\uc6b4\ub4dc(lbs)"
                     },
                     "height(ft/in)": {
-                        "name": "\ud0a4\u0028\ud53c\ud2b8\u002f\uc778\uce58\u0029"
+                        "name": "\ud0a4(\ud53c\ud2b8/\uc778\uce58)"
                     }
                 }
+            },
+            "height": {
+                "name": "\ud0a4"
+            },
+            "basal_metabolism": {
+                "name": "\uae30\ucd08\ub300\uc0ac\ub7c9"
+            },
+            "body_fat": {
+                "name": "\uccb4\uc9c0\ubc29"
+            },
+            "muscle_mass": {
+                "name": "\uadfc\uc721\ub7c9"
+            },
+            "water": {
+                "name": "\uc218\ubd84\ub7c9"
+            },
+            "bone_mass": {
+                "name": "\ubf08\uc9c8\ub7c9"
+            },
+            "lean_body_mass": {
+                "name": "\ubb34\uc9c0\ubc29 \uccb4\uc911"
+            },
+            "visceral_fat": {
+                "name": "\ub0b4\uc7a5\uc9c0\ubc29"
+            },
+            "protein": {
+                "name": "\ub2e8\ubc31\uc9c8"
+            },
+            "bmi": {
+                "name": "bmi"
+            },
+            "body_score": {
+                "name": "\uc2e0\uccb4\uc810\uc218"
+            },
+            "metabolic_age": {
+                "name": "\uc2e0\uccb4\ub098\uc774"
+            },
+            "impedance": {
+                "name": "\uc784\ud53c\ub358\uc2a4"
             }
         },
         "number": {
             "manual_input": {
-                "name": "\uc218\ub3d9\u0020\uae30\ub85d"
+                "name": "\uc218\ub3d9 \uae30\ub85d"
             }
         },
         "select": {
             "unrecorded_data": {
-                "name": "\ubbf8\uc785\ub825\u0020\uae30\ub85d"
+                "name": "\ubbf8\uc785\ub825 \uae30\ub85d"
             },
             "profile_list": {
-                "name": "\uad6c\uc131\uc6d0\u0020\ubaa9\ub85d"
+                "name": "\uad6c\uc131\uc6d0 \ubaa9\ub85d"
             }
         },
         "button": {
             "unrecorded_input": {
-                "name": "\uc120\ud0dd\ub41c\u0020\uad6c\uc131\uc6d0\uc5d0\u0020\uae30\ub85d"
+                "name": "\uc120\ud0dd\ub41c \uad6c\uc131\uc6d0\uc5d0 \uae30\ub85d"
             },
             "unrecorded_remove": {
-                "name": "\uc120\ud0dd\ub41c\u0020\ub370\uc774\ud130\u0020\uc0ad\uc81c"
+                "name": "\uc120\ud0dd\ub41c \ub370\uc774\ud130 \uc0ad\uc81c"
             },
             "unrecorded_clear": {
-                "name": "\ubaa8\ub450\u0020\uc0ad\uc81c"
+                "name": "\ubaa8\ub450 \uc0ad\uc81c"
             }
         }
-
     },
     "selector": {
         "option_select": {
             "options": {
-                "add profile" : "\uad6c\uc131\uc6d0\u0020\ud504\ub85c\ud544\u0020\ucd94\uac00",
-                "modify profile" : "\uad6c\uc131\uc6d0\u0020\ud504\ub85c\ud544\u0020\uc218\uc815"
+                "add profile": "\uad6c\uc131\uc6d0 \ud504\ub85c\ud544 \ucd94\uac00",
+                "modify profile": "\uad6c\uc131\uc6d0 \ud504\ub85c\ud544 \uc218\uc815",
+                "add weight entity": "\uccb4\uc911\uacc4\ub97c \ucd94\uac00\ud569\ub2c8\ub2e4",
+                "modify weight entity": "\uccb4\uc911\uacc4\ub97c \uc218\uc815\ud569\ub2c8\ub2e4"
+            }
+        },
+        "gender": {
+            "options": {
+                "male": "\ub0a8\uc131",
+                "female": "\uc5ec\uc131"
             }
         }
     }

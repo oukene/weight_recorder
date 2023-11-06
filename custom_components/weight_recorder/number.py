@@ -11,14 +11,13 @@ from .hub import *
 
 from homeassistant.helpers import (
     device_registry as dr,
-    entity_platform,
     entity_registry as er,
 )
 
 
 _LOGGER = logging.getLogger(__name__)
 
-ENTITY_ID_FORMAT = DOMAIN + ".{}"
+ENTITY_ID_FORMAT = "number" + ".{}"
 
 
 def isNumber(s):
@@ -38,11 +37,8 @@ async def async_setup_entry(hass, entry, async_add_devices):
     new_devices = []
     hub = hass.data[DOMAIN][entry.entry_id]["hub"]
     devices = hub.devices
-    _LOGGER.debug("devices : " + str(devices))
 
     for device_id, device in devices.items():
-        _LOGGER.debug("find device id : " + str(device.device_id))
-        _LOGGER.debug("conf : " + str(device.configure))
         if not device.isHub() and device.configure.get(CONF_USE_MANUAL_INPUT, False):
             s = WeightRecorderNumber(hass, entry.entry_id, device, translation_key=TRANS_KEY_MANUAL_INPUT)
             new_devices.append(s)
@@ -59,13 +55,11 @@ class WeightRecorderNumber(EntityBase, NumberEntity):
         super().__init__(device, translation_key=translation_key)
         self.entry_id = entry_id
         self.hass = hass
-        _LOGGER.debug("configure : " + str(device.configure))
 
         self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, "manual input"), hass=hass)
-        _LOGGER.debug("entity id : " + str(self.entity_id))
+            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, "manual input"), current_ids="", hass=hass)
         self._name = "{}".format("manual input")
-        self._unit_of_measurement = CONF_DEFAULT_UNIT
+        self._unit_of_measurement = "kg"
         self._value = 0
         self._attributes = {}
         self._unique_id = self.entity_id
@@ -102,4 +96,5 @@ class WeightRecorderNumber(EntityBase, NumberEntity):
         return self._unit_of_measurement
 
     async def async_set_native_value(self, value: float) -> None:
-        await self._device.weight_entity.async_set_value(value)
+        await self._device.get_sensor(SENSOR_KEY.WEIGHT).async_set_value(value, self._unit_of_measurement)
+        self._value = None

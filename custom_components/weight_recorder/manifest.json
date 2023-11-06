@@ -7,7 +7,7 @@
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},
-  "dependencies": [],
+  "dependencies": ["bodymiscale"],
   "codeowners": [
     "@oukene"
   ],

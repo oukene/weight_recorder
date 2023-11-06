@@ -37,11 +37,8 @@ async def async_setup_entry(hass, entry, async_add_devices):
     new_devices = []
     hub = hass.data[DOMAIN][entry.entry_id]["hub"]
     devices = hub.devices
-    _LOGGER.debug("devices : " + str(devices))
 
     for device_id, device in devices.items():
-        _LOGGER.debug("find device id : " + str(device.device_id))
-        _LOGGER.debug("conf : " + str(device.configure))
         if entry.options.get(CONF_USE_UNRECORDED_DATA):
             if device.isHub():
                 s = WeightRecorderButton(hass, entry.entry_id, device, TRANS_KEY_UNRECORDED_INPUT)
@@ -63,11 +60,9 @@ class WeightRecorderButton(EntityBase, ButtonEntity):
         EntityBase.__init__(self, device, translation_key=translation_key)
         self.entry_id = entry_id
         self.hass = hass
-        _LOGGER.debug("configure : " + str(device.configure))
 
         self.entity_id = async_generate_entity_id(
             ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, translation_key), hass=hass)
-        _LOGGER.debug("entity id : " + str(self.entity_id))
         self._name = "{}".format(translation_key)
         self._attributes = {}
         self._unique_id = self.entity_id
