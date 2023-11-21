@@ -20,8 +20,6 @@ from homeassistant.helpers import (
 import time
 
 from custom_components.bodymiscale.metrics.scale import Scale
-from custom_components.bodymiscale.metrics.weight import get_bmr, get_bmi, get_visceral_fat
-from custom_components.bodymiscale.metrics.impedance import get_bone_mass, get_lbm, get_metabolic_age, get_muscle_mass, get_protein_percentage, get_water_percentage
 
 def get_american_age(birthday, thatday):
     _LOGGER.debug("birthday : " + str(birthday) + ", thatday : " + str(thatday))
@@ -188,12 +186,18 @@ class Hub:
         self.__unrecorded_select_entity = None
         self.__profile_list_entity = None
         self.__weight_entities = {}
+        self._recv_weight = False
+        self._recv_imp = False
+        self._current_id = 0
         self.setup()
 
     def setup(self):
-        for weight, impedance in self._weight_devices.items():
+        for weight, devices in self._weight_devices.items():
             self.hass.data[DOMAIN][self.entry.entry_id]["listener"].append(
                 async_track_state_change(self.hass, weight, self.entity_listener))
+            if devices.get(CONF_IMP_ENTITY, None):
+                self.hass.data[DOMAIN][self.entry.entry_id]["listener"].append(
+                    async_track_state_change(self.hass, devices.get(CONF_IMP_ENTITY), self.imp_entity_listener))
 
         #self.hass.bus.async_listen_once(
         #    EVENT_HOMEASSISTANT_STARTED, self.hass_load_end)
@@ -204,51 +208,99 @@ class Hub:
         #_LOGGER.debug("hass load end!!")
         # self._hass_load_end = True
 
+    async def imp_entity_listener(self, entity, old_state, new_state: SensorExtraStoredData):
+        if _is_valid_state(new_state) and self._recv_weight:
+            self._recv_imp = True
+
     async def entity_listener(self, entity, old_state, new_state: SensorExtraStoredData):
-        if not _is_valid_state(new_state) or self.last_weight == new_state.state or Decimal(new_state.state) == Decimal(0):
+        if not _is_valid_state(new_state) or Decimal(new_state.state) == Decimal(0) or self._recv_weight:
+        #if not _is_valid_state(new_state) or self.last_weight == new_state.state or Decimal(new_state.state) == Decimal(0):
+            self._recv_imp = False
+            self._recv_weight = False
             return
 
+        for device_id, device in self.devices.items():
+            if device.device_type == DeviceType.HUB:
+                self._recv_weight = True
+                await device.get_sensor(SENSOR_KEY.STATUS.value).async_set_value("calculating...")
+                await device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(new_state.state)
+                await device.get_sensor(SENSOR_KEY.IMPEDANCE.value).async_set_value(0)
+                
+                remain_seconds = 7
+                while (remain_seconds >= 0):
+                    if self._recv_imp:
+                        break
+                    await asyncio.sleep(1)
+                    await device.get_sensor(SENSOR_KEY.STATUS.value).async_set_value("remain " + str(remain_seconds) + "s")
+                    remain_seconds = remain_seconds - 1
+                await device.get_sensor(SENSOR_KEY.STATUS.value).async_set_value("Ready")
+                break
 
-        bia_value = 0
-        if bia_entity := self._weight_devices[entity].get(CONF_BIA_ENTITY, None):
-            bia_value = self.hass.states.get(bia_entity).state if _is_valid_state(self.hass.states.get(bia_entity)) else 0
+        imp_value = 0
+        if imp_entity := self._weight_devices[entity].get(CONF_IMP_ENTITY, None):
+            imp_value = self.hass.states.get(imp_entity).state if _is_valid_state(self.hass.states.get(imp_entity)) and self._recv_imp else 0
+    
+        self._recv_imp = False
+        self._recv_weight = False
 
         in_range_count = 0
         submit_device = None
         for device_id, device in self.devices.items():
             if device and device.get_sensor(SENSOR_KEY.WEIGHT.value):
                 if device.device_type == DeviceType.HUB:
-                    await device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(new_state.state)
+                    #await device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(new_state.state)
+                    await device.get_sensor(SENSOR_KEY.IMPEDANCE.value).async_set_value(imp_value)
                     self.last_weight = new_state.state
-                    #await device.get_sensor(SENSOR_KEY.IMPEDANCE.value).async_set_value(bia_value)
+                    #await device.get_sensor(SENSOR_KEY.IMPEDANCE.value).async_set_value(bia_valbbue)
                     continue
                 elif device.device_type == DeviceType.PROFILE:
                     _LOGGER.debug("check check range")
                     _LOGGER.debug("old_state : " + str(old_state))
                     _LOGGER.debug("new_state : " + str(new_state))
                     if device.get_sensor(SENSOR_KEY.WEIGHT.value).check_range(new_state.state) \
-                        and (bia_value == 0 or device.get_sensor(SENSOR_KEY.IMPEDANCE.value).check_range(bia_value)):
+                        and (imp_value == 0 or device.get_sensor(SENSOR_KEY.IMPEDANCE.value).check_range(imp_value)):
                         in_range_count += 1
                         submit_device = device
 
+        find_selected_profile = False
         _LOGGER.debug("in range count: " + str(in_range_count))
-        if in_range_count == 1:
-            await self.record_user_profile(submit_device, new_state.state, new_state.attributes.get(ATTR_UNIT_OF_MEASUREMENT), bia_value)
+        if self.profile_list_entity != None:
+            for entity_id, profile in self.profile_list_entity._profiles.items():
+                if profile == self.profile_list_entity.current_option:
+                    for device_id, device in self.devices.items():
+                        if entity_id == device.get_sensor(SENSOR_KEY.WEIGHT.value).entity_id:
+                            _LOGGER.debug("find selected profile")
+                            await self.record_user_profile(
+                                device, float(new_state.state), "kg", imp_value)
+                            find_selected_profile = True
+        if find_selected_profile == False:
+            if in_range_count == 1:
+                await self.record_user_profile(submit_device, new_state.state, new_state.attributes.get(ATTR_UNIT_OF_MEASUREMENT), imp_value)
+            else:
+                # unrecorded data process
+                if self.unrecorded_entity:
+                    await self.unrecorded_entity.async_add_option(new_state.state, imp_value)
+
+        # for device_id, device in self.devices.items():
+        #     if device.device_type == DeviceType.HUB:
+        #         await device.get_sensor(SENSOR_KEY.STATUS.value).async_set_value("Ready")
+        #if in_range_count == 1:
+            #await self.record_user_profile(submit_device, new_state.state, new_state.attributes.get(ATTR_UNIT_OF_MEASUREMENT), imp_value)
             #await submit_device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(new_state.state, new_state.attributes.get(ATTR_UNIT_OF_MEASUREMENT))
-        else:
-            _LOGGER.debug("check selected profile")
-            if self.profile_list_entity != None:
-                for entity_id, profile in self.profile_list_entity._profiles.items():
-                    if profile == self.profile_list_entity.current_option:
-                        for device_id, device in self.devices.items():
-                            if entity_id == device.get_sensor(SENSOR_KEY.WEIGHT.value).entity_id:
-                                _LOGGER.debug("find selected profile")
-                                await self.record_user_profile(
-                                    device, float(new_state.state), "kg", bia_value)
-                                return
-            # unrecorded data process
-            if self.unrecorded_entity:
-                await self.unrecorded_entity.async_add_option(new_state.state, bia_value)
+        # else:
+        #     _LOGGER.debug("check selected profile")
+        #     if self.profile_list_entity != None:
+        #         for entity_id, profile in self.profile_list_entity._profiles.items():
+        #             if profile == self.profile_list_entity.current_option:
+        #                 for device_id, device in self.devices.items():
+        #                     if entity_id == device.get_sensor(SENSOR_KEY.WEIGHT.value).entity_id:
+        #                         _LOGGER.debug("find selected profile")
+        #                         await self.record_user_profile(
+        #                             device, float(new_state.state), "kg", imp_value)
+        #                         return
+        #     # unrecorded data process
+        #     if self.unrecorded_entity:
+        #         await self.unrecorded_entity.async_add_option(new_state.state, imp_value)
 
     def add_device(self, device: Device) -> None:
         self.__devices[device.device_id] = device
@@ -308,6 +360,12 @@ class Hub:
         date_time_obj = datetime.strptime(conf.get(CONF_BIRTH), "%Y-%m-%d")
         age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
 
+        if imp == 0:
+            if last_imp := device.get_sensor(SENSOR_KEY.IMPEDANCE.value).state:
+                if last_imp != STATE_UNAVAILABLE and last_imp != STATE_UNKNOWN:
+                    imp = last_imp
+
+
         metrics = {}
         metrics[CONF_WEIGHT] = float(weight)
         metrics["age"] = int(age)
@@ -318,7 +376,7 @@ class Hub:
                 await device.get_sensor(desc.key).async_set_value(weight)
             elif desc.key == SENSOR_KEY.IMPEDANCE.value:
                 await device.get_sensor(desc.key).async_set_value(imp)
-            elif imp != 0:
+            elif desc.key != SENSOR_KEY.STATUS.value and imp != 0:
                 result = desc.calculator(conf, metrics)
                 metrics[desc.key] = float(result)
 
@@ -357,9 +415,9 @@ class Hub:
 
     async def record_data(self):
         """"""
-        time = self.unrecorded_entity.current_option.split("-")[0]
-        weight = self.unrecorded_entity.current_option.split("-")[1]
-        imp = self.unrecorded_entity.current_option.split("-")[2]
+        time = self.unrecorded_entity.current_option.split(",")[0]
+        weight = self.unrecorded_entity.current_option.split(",")[1]
+        imp = self.unrecorded_entity.current_option.split(",")[2]
 
         for entity_id, profile in self.profile_list_entity._profiles.items():
             if profile == self.profile_list_entity.current_option:
@@ -372,7 +430,7 @@ class Hub:
 
     async def remove_data(self):
         """"""
-        time = self.unrecorded_entity.current_option.split("-")[0]
+        time = self.unrecorded_entity.current_option.split(",")[0]
         await self.unrecorded_entity.async_remove_option(time)
 
     async def clear_data(self):

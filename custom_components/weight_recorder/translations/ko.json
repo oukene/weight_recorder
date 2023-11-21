@@ -24,6 +24,20 @@
                 },
                 "description": ""
             },
+            "weight_select": {
+                "title": "\uccb4\uc911\uacc4 \ub514\ubc14\uc774\uc2a4 \uc120\ud0dd",
+                "data": {
+                    "select_device": "\uccb4\uc911\uacc4 \ubaa9\ub85d",
+                    "delete_device": "\uc120\ud0dd\ud55c \uccb4\uc911\uacc4\ub97c \uc0ad\uc81c\ud569\ub2c8\ub2e4"
+                }
+            },
+            "add_weight": {
+                "title": "\uccb4\uc911\uacc4\ub97c \ucd94\uac00\ud569\ub2c8\ub2e4",
+                "data": {
+                    "weight_entity": "\uccb4\uc911 \uad6c\uc131\uc694\uc18c\ub97c \uc120\ud0dd\ud558\uc138\uc694",
+                    "imp_entity": "\uc784\ud53c\ub358\uc2a4 \uad6c\uc131\uc694\uc18c\ub97c \uc120\ud0dd\ud558\uc138\uc694"
+                }
+            },
             "select": {
                 "title": "\uad6c\uc131\uc6d0 \ud504\ub85c\ud544 \uc218\uc815",
                 "data": {
@@ -120,6 +134,9 @@
             },
             "impedance": {
                 "name": "\uc784\ud53c\ub358\uc2a4"
+            },
+            "status": {
+                "name": "\uc0c1\ud0dc"
             }
         },
         "number": {

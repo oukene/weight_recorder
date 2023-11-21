@@ -36,7 +36,7 @@ GENDER = [
 ]
 
 CONF_WEIGHT_ENTITY = "weight_entity"
-CONF_BIA_ENTITY = "bia_entity"
+CONF_IMP_ENTITY = "imp_entity"
 CONF_DEVICE_TYPE = "device_type"
 CONF_SELECT_PROFILE_RESET_SECONDS = "select_profile_reset_seconds"
 
@@ -96,9 +96,13 @@ class SENSOR_KEY(Enum):
     PROTEIN = "protein"
     WATER = "water"
     VISCERAL_FAT = "visceral_fat"
+    STATUS = "status"
 
 
 SENSORS_DESC = [
+    WeightSensorEntityDescription(
+        key=SENSOR_KEY.STATUS.value,
+    ),
     WeightSensorEntityDescription(
         key=SENSOR_KEY.WEIGHT.value,
         native_unit_of_measurement="kg",
@@ -110,6 +114,7 @@ SENSORS_DESC = [
     WeightSensorEntityDescription(
         key=SENSOR_KEY.IMPEDANCE.value,
         native_unit_of_measurement="Ω",
+        icon="mdi:omega",
         state_class=SensorStateClass.MEASUREMENT,
         display_precision=0,
     ),
@@ -168,6 +173,7 @@ SENSORS_DESC = [
     WeightSensorEntityDescription(
         key=SENSOR_KEY.WATER.value,
         native_unit_of_measurement="%",
+        icon = "mdi:water",
         state_class=SensorStateClass.MEASUREMENT,
         calculator=get_water_percentage,
         display_precision=0,
@@ -189,6 +195,7 @@ SENSORS_DESC = [
         key=SENSOR_KEY.BODY_SCORE.value,
         native_unit_of_measurement="point",
         state_class=SensorStateClass.MEASUREMENT,
+        icon = "mdi:medal",
         calculator=get_body_score,
         display_precision=0,
     ),

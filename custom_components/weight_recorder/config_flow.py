@@ -198,7 +198,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
                 self.data[CONF_WEIGHT_DEVICES][user_input[CONF_WEIGHT_ENTITY]] = {
                     CONF_WEIGHT_ENTITY: user_input[CONF_WEIGHT_ENTITY],
-                    CONF_BIA_ENTITY: user_input[CONF_BIA_ENTITY],
+                    CONF_IMP_ENTITY: user_input[CONF_IMP_ENTITY],
                     #CONF_DEVICE_TYPE: user_input[CONF_DEVICE_TYPE],
                 }
 
@@ -208,7 +208,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         data_schema = vol.Schema(
             {
                 vol.Required(CONF_WEIGHT_ENTITY, default=self._selected_conf.get(CONF_WEIGHT_ENTITY) if self._selected_conf is not None else None): selector.EntitySelector(selector.EntitySelectorConfig(domain=["sensor", "input_number"])),
-                vol.Optional(CONF_BIA_ENTITY, description={"suggested_value": self._selected_conf.get(CONF_BIA_ENTITY, None)}): selector.EntitySelector(selector.EntitySelectorConfig(domain=["sensor", "input_number"])),
+                vol.Optional(CONF_IMP_ENTITY, description={"suggested_value": self._selected_conf.get(CONF_IMP_ENTITY, None)}): selector.EntitySelector(selector.EntitySelectorConfig(domain=["sensor", "input_number"])),
                 # vol.Required(CONF_BIRTH, default=self._selected_conf.get(CONF_BIRTH) if self._selected_conf is not None else None): selector.TextSelector(selector.TextSelectorConfig(type="date")),
                 # vol.Required(CONF_HEIGHT, default=self._selected_conf.get(CONF_HEIGHT) if self._selected_conf is not None else 0): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="cm", mode="slider")),
                 # vol.Required(CONF_WEIGHT, default=self._selected_conf.get(CONF_WEIGHT) if self._selected_conf is not None else 0): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement=CONF_DEFAULT_UNIT, mode="slider")),
@@ -233,13 +233,23 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         if user_input is not None:
             if not errors:
-                device_name = user_input[CONF_SELECT_DEVICE].split("-")[0]
-                device_id = user_input[CONF_SELECT_DEVICE].split("-")[1]
+                device_name = user_input[CONF_SELECT_DEVICE]
+                device_id = None
                 conf = self.data[CONF_PROFILES].get(device_name)
-                if conf == None:
-                    for d in devices:
-                        if d.name_by_user == device_name:
-                            conf = self.data[CONF_PROFILES].get(d.name)
+                #if conf == None:
+                for d in devices:
+                    if d.name_by_user == device_name:
+                        conf = self.data[CONF_PROFILES].get(d.name)
+                        _LOGGER.debug("set device id")
+                        device_id = d.id
+                        break;
+                
+                for d in devices:
+                    if d.name == device_name:
+                        conf = self.data[CONF_PROFILES].get(d.name)
+                        _LOGGER.debug("set device id")
+                        device_id = d.id
+                        break
 
                 if user_input[CONF_DELETE_DEVICE]:
                     _LOGGER.debug("device id : " + str(device_id))
@@ -265,7 +275,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             if not re.search("_Hub", d.name):
                 _LOGGER.debug("device info : " + str(d))
                 include_device.append(
-                    d.name_by_user + "-" + d.id if d.name_by_user != None else d.name + "-" + d.id)
+                    d.name_by_user if d.name_by_user != None else d.name)
 
         return self.async_show_form(
             step_id="select",
@@ -323,8 +333,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(CONF_HEIGHT, default=self._selected_conf.get(CONF_HEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="cm", mode="slider")),
                 vol.Required(CONF_WEIGHT, default=self._selected_conf.get(CONF_WEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="kg", mode="slider")),
                 vol.Required(CONF_GENDER, default=self._selected_conf.get(CONF_GENDER, GENDER[0])): selector.SelectSelector(selector.SelectSelectorConfig(options=GENDER, mode=selector.SelectSelectorMode.DROPDOWN, translation_key=CONF_GENDER)),
-                vol.Required(CONF_ADMIT_WEIGHT_RANGE, default=self._selected_conf.get(CONF_ADMIT_WEIGHT_RANGE, None)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=20, step=0.1, unit_of_measurement="kg", mode="slider")),
-                vol.Required(CONF_ADMIT_IMP_RANGE, default=self._selected_conf.get(CONF_ADMIT_IMP_RANGE, None)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=50, step=0.1, mode="slider")),
+                vol.Required(CONF_ADMIT_WEIGHT_RANGE, default=self._selected_conf.get(CONF_ADMIT_WEIGHT_RANGE, 5)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=20, step=0.1, unit_of_measurement="kg", mode="slider")),
+                vol.Required(CONF_ADMIT_IMP_RANGE, default=self._selected_conf.get(CONF_ADMIT_IMP_RANGE, 50)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=200, step=1, unit_of_measurement="Ω", mode="slider")),
                 vol.Required(CONF_USE_MANUAL_INPUT, default=True): selector.BooleanSelector(selector.BooleanSelectorConfig()),
             }
         )

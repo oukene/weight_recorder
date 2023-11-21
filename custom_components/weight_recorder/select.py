@@ -105,7 +105,7 @@ class WeightRecorderSelect(EntityBase, SelectEntity):
             for key, value in entry.options.get(TRANS_KEY_UNRECORDED_DATA, {}).items():
                 date_time_obj = datetime.strptime(key, "%Y-%m-%d %H:%M:%S")
                 #self._options.append(date_time_obj.strftime('%Y-%m-%d %H:%M:%S') + "-" + value[0] + "-" + value[1])
-                self._options.append(date_time_obj.strftime('%Y-%m-%d %H:%M:%S') + "-" + value[0] + "-" + value[1])
+                self._options.append(date_time_obj.strftime('%Y-%m-%d %H:%M:%S') + "," + str(value[0]) + "," + str(value[1]))
             
             hub.unrecorded_entity = self
         elif self._translation_key == TRANS_KEY_PROFILE_LIST:

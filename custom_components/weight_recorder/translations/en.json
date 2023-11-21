@@ -24,6 +24,20 @@
                 },
                 "description": ""
             },
+            "weight_select": {
+                "title": "select scale device",
+                "data": {
+                    "select_device": "scale device list",
+                    "delete_device": "delete selected scale device"
+                }
+            },
+            "add_weight": {
+                "title": "add new scale",
+                "data": {
+                    "weight_entity": "select weight entity",
+                    "imp_entity": "select impedance entity"
+                }
+            },
             "select": {
                 "title": "Edit member profile",
                 "data": {
@@ -120,6 +134,9 @@
             },
             "impedance": {
                 "name": "impedance"
+            },
+            "status": {
+                "name": "status"
             }
         },
         "number": {

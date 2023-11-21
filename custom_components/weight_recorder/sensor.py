@@ -37,7 +37,10 @@ async def async_setup_entry(hass, entry, async_add_devices):
         #if device.device_type == DeviceType.PROFILE:
         for sensor_desc in SENSORS_DESC:
             if device.device_type == DeviceType.HUB:
-                if sensor_desc.key not in ("weight", "impedance"):
+                if sensor_desc.key not in (SENSOR_KEY.WEIGHT.value, SENSOR_KEY.IMPEDANCE.value, SENSOR_KEY.STATUS.value):
+                    continue
+            elif device.device_type == DeviceType.PROFILE:
+                if sensor_desc.key in (SENSOR_KEY.STATUS.value):
                     continue
             new_devices.append(WeightRecorderSensor(hass, entry.entry_id, device, sensor_desc),
         )
@@ -66,7 +69,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         if sensor_desc.key == SENSOR_KEY.WEIGHT.value:
             self._admit_range = device.configure.get(CONF_ADMIT_WEIGHT_RANGE)
         elif sensor_desc.key == SENSOR_KEY.IMPEDANCE.value:
-            self._admit_range = device.configure.get(CONF_ADMIT_IMP_RANGE)
+           self._admit_range = device.configure.get(CONF_ADMIT_IMP_RANGE)
         #elif sensor_desc.key == SENSOR_KEY.IMPEDANCE.value:
         #    self._admit_range = device.configure.get(CONF_ADMIT_IMP_RANGE)
         self.entity_id = async_generate_entity_id(
@@ -143,6 +146,9 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         if old_state != None and old_state.native_value != None:
             value = old_state.native_value
 
+        if self.entity_description.key == SENSOR_KEY.STATUS.value:
+            value = "Ready"
+
         await self.async_set_value(value)
         #self._unit_of_measurement = old_state.native_unit_of_measurement
 
@@ -154,7 +160,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         self._hub.add_weight_entity(self)
 
     def check_range(self, new_value) -> bool:
-        if self._value == None or self._value == STATE_UNAVAILABLE or self._value == STATE_UNKNOWN or self._admit_range == None:
+        if self._value == None or self._value == STATE_UNAVAILABLE or self._value == STATE_UNKNOWN or self._admit_range == None or self._value == 0:
             return True
         if self._value and self._admit_range:
             return _in_range(float(new_value), float(self._value) - float(self._admit_range), float(self._value) + float(self._admit_range))
@@ -189,3 +195,6 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
     def suggested_display_precision(self) -> int | None:
         return self.entity_description.display_precision
 
+    @property
+    def icon(self) -> str | None:
+        return self.entity_description.icon
