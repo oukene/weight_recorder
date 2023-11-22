@@ -66,33 +66,33 @@
                 "name": "\ubab8\ubb34\uac8c",
                 "state_attributes": {
                     "height": {
-                        "name": "\ud0a4(cm)"
+                        "name": "height(cm)"
                     },
                     "bmi": {
-                        "name": "\uccb4\uc9c8\ub7c9 \uc9c0\uc218(bmi)"
+                        "name": "body mass index(bmi)"
                     },
                     "bmi_state": {
-                        "name": "\ube44\ub9cc\ub3c4",
+                        "name": "bmi state",
                         "state": {
-                            "under": "\uc800\uccb4\uc911",
-                            "normal": "\uc815\uc0c1\uccb4\uc911",
-                            "over": "\uacfc\uccb4\uc911",
-                            "I_Obesity": "1\ub2e8\uacc4 \ube44\ub9cc",
-                            "II_Obesity": "2\ub2e8\uacc4 \ube44\ub9cc",
-                            "III_Obesity": "3\ub2e8\uacc4 \ube44\ub9cc"
+                            "under": "under weight",
+                            "normal": "normal weight",
+                            "over": "over weight",
+                            "I_Obesity": "1 obesity",
+                            "II_Obesity": "2 obesity",
+                            "III_Obesity": "3 obesity"
                         }
                     },
                     "birth": {
-                        "name": "\ucd9c\uc0dd\uc77c"
+                        "name": "date of birth"
                     },
                     "age": {
-                        "name": "\ub098\uc774"
+                        "name": "age"
                     },
                     "lbs": {
-                        "name": "\ud30c\uc6b4\ub4dc(lbs)"
+                        "name": "pound(lbs)"
                     },
                     "height(ft/in)": {
-                        "name": "\ud0a4(\ud53c\ud2b8/\uc778\uce58)"
+                        "name": "height(ft/in)"
                     }
                 }
             },
