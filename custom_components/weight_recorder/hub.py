@@ -416,12 +416,12 @@ class Hub:
         time = self.unrecorded_entity.current_option.split(",")[0]
         weight = self.unrecorded_entity.current_option.split(",")[1]
         imp = self.unrecorded_entity.current_option.split(",")[2]
-
+        
         for entity_id, profile in self.profile_list_entity._profiles.items():
             if profile == self.profile_list_entity.current_option:
                 for device_id, device in self.devices.items():
                     if entity_id == device.get_sensor(SENSOR_KEY.WEIGHT.value).entity_id:
-                        self.record_user_profile(
+                        await self.record_user_profile(
                             device, float(weight), "kg", imp)
                         await self.remove_data()
                         break
