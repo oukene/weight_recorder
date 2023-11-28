@@ -168,10 +168,11 @@ class WeightRecorderSelect(EntityBase, SelectEntity):
         _LOGGER.debug("current option : " + str(self._current_option))
         return self._current_option
 
-    def select_option(self, option: str) -> None:
+    async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         _LOGGER.debug("async_select_option reset_time : " + str(self._reset_time))
         self._current_option = option
+        await self.async_update_ha_state()
 
         # if self._reset_time > 0:
         #     try:

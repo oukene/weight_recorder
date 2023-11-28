@@ -98,3 +98,4 @@ class WeightRecorderNumber(EntityBase, NumberEntity):
     async def async_set_native_value(self, value: float) -> None:
         await self._device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(value)
         self._value = None
+        await self.async_update_ha_state()
