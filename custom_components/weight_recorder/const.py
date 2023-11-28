@@ -18,7 +18,7 @@ from custom_components.bodymiscale.const import ATTR_BMILABEL, ATTR_IDEAL
 # name for the integration.
 DOMAIN = "weight_recorder"
 NAME = "Weight Recorder"
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 MANUFACTURE = "oukene"
 
 TRANS_KEY_MANUAL_INPUT = "manual_input"
