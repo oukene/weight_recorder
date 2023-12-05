@@ -18,6 +18,7 @@ from homeassistant.helpers import (
 )
 
 import time
+from operator import eq
 
 from custom_components.bodymiscale.metrics.scale import Scale
 from custom_components.bodymiscale.metrics import get_body_type, get_fat_mass_to_ideal_weight
@@ -123,15 +124,17 @@ class bodymiscale(Entity):
         date_time_obj = datetime.strptime(self._device.configure.get(CONF_BIRTH), "%Y-%m-%d")
         age = get_american_age(date_time_obj.strftime(
             "%Y%m%d"), datetime.now().strftime('%Y%m%d'))
-        self._attributes["age"] = age
+        self._attributes["age"] = int(age)
         self._attr_state = "ok"
         self._attributes["problem"] = "ok"
 
     def set_extra_attribute(self, key, value):
         _LOGGER.debug("set attribute ")
         
-        _LOGGER.debug("value : " + str(value))
-        self._attributes[key] = round(float(value), 2) if isNumber(value) else value
+        if eq(key, SENSOR_KEY.METABOLIC_AGE.value):
+            self._attributes[key] = int(value)
+        else:
+            self._attributes[key] = round(float(value)) if isNumber(value) else value
 
         if self._attributes.get(SENSOR_KEY.WEIGHT.value) and self._attributes.get(SENSOR_KEY.BODY_FAT.value) and self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value) and self._attributes.get("height") and self._attributes.get("gender") and self._attributes.get("age"):
             scale = Scale(self._attributes.get("height"), self._attributes.get("gender"))
