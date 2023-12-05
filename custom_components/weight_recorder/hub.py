@@ -126,29 +126,28 @@ class bodymiscale(Entity):
 
     def set_extra_attribute(self, key, value):
         _LOGGER.debug("set attribute ")
-        self._attributes[key] = value
+        
+        _LOGGER.debug("value : " + str(value))
+        self._attributes[key] = round(float(value), 2) if isNumber(value) else value
 
         if self._attributes.get(SENSOR_KEY.WEIGHT.value) and self._attributes.get(SENSOR_KEY.BODY_FAT.value) and self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value) and self._attributes.get("height") and self._attributes.get("gender") and self._attributes.get("age"):
             scale = Scale(self._attributes.get("height"), self._attributes.get("gender"))
             config = {}
             config["scale"] = scale
             metrics = {}
-            metrics[SENSOR_KEY.WEIGHT.value] = float(self._attributes.get(SENSOR_KEY.WEIGHT.value))
-            metrics[SENSOR_KEY.BODY_FAT.value] = float(self._attributes.get(SENSOR_KEY.BODY_FAT.value))
-            metrics[SENSOR_KEY.MUSCLE_MASS.value] = float(self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value))
+            metrics[SENSOR_KEY.WEIGHT.value] = round(float(self._attributes.get(SENSOR_KEY.WEIGHT.value)), 2)
+            metrics[SENSOR_KEY.BODY_FAT.value] = round(float(self._attributes.get(SENSOR_KEY.BODY_FAT.value)), 2)
+            metrics[SENSOR_KEY.MUSCLE_MASS.value] = round(float(self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value)), 2)
             metrics["age"] = int(self._attributes.get("age"))
-
-            _LOGGER.debug("age : " + str(metrics["age"]))
 
             body_type = get_body_type(config, metrics)
             self._attributes["body_type"] = body_type
 
             ideal2weight = get_fat_mass_to_ideal_weight(config, metrics)
             if ideal2weight < 0:
-                self._attributes["fat_mass_to_lose"] = ideal2weight * -1
+                self._attributes["fat_mass_to_lose"] = round(ideal2weight * -1, 2)
             else:
-                self._attributes["fat_mass_to_gain"] = ideal2weight * -1
-
+                self._attributes["fat_mass_to_gain"] = round(ideal2weight, 2)
 
     @property
     def device_info(self):
@@ -455,7 +454,6 @@ class Hub:
         for desc in SENSORS_DESC:
             if desc.key == SENSOR_KEY.WEIGHT.value:
                 await device.get_sensor(desc.key).async_set_value(weight)
-                self.mibody_entity.set_extra_attribute(desc.key, weight)
             elif desc.key == SENSOR_KEY.IMPEDANCE.value:
                 await device.get_sensor(desc.key).async_set_value(imp)
             elif desc.key != SENSOR_KEY.STATUS.value and imp != 0:
