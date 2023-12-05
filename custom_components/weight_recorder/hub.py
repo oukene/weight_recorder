@@ -3,7 +3,7 @@ from datetime import datetime
 import asyncio
 
 from .const import *
-from homeassistant.components.sensor import SensorExtraStoredData
+from homeassistant.components.sensor import SensorExtraStoredData, RestoreSensor
 from homeassistant.helpers.entity import Entity
 import logging
 from homeassistant.helpers.event import async_track_state_change
@@ -20,6 +20,7 @@ from homeassistant.helpers import (
 import time
 
 from custom_components.bodymiscale.metrics.scale import Scale
+from custom_components.bodymiscale.metrics import get_body_type, get_fat_mass_to_ideal_weight
 
 
 def get_american_age(birthday, thatday):
@@ -104,6 +105,75 @@ class EntityBase(Entity):
         """Return entity specific state attributes."""
         return self._attributes
 
+class bodymiscale(Entity):
+    def __init__(self, hub, device):
+        super().__init__()
+        self._device = device
+        self._hub = hub
+        self.entity_id = "bodymiscale." + device.name
+
+        self._hub.mibody_entity = self
+        self._attributes = {}
+        self._attributes[CONF_HEIGHT] = self._device.configure.get(CONF_HEIGHT)
+        self._attributes[CONF_GENDER] = self._device.configure.get(CONF_GENDER)
+
+        date_time_obj = datetime.strptime(self._device.configure.get(CONF_BIRTH), "%Y-%m-%d")
+        age = get_american_age(date_time_obj.strftime(
+            "%Y%m%d"), datetime.now().strftime('%Y%m%d'))
+        self._attributes["age"] = age
+        self._attr_state = "ok"
+        self._attributes["problem"] = "ok"
+
+    def set_extra_attribute(self, key, value):
+        _LOGGER.debug("set attribute ")
+        self._attributes[key] = value
+
+        if self._attributes.get(SENSOR_KEY.WEIGHT.value) and self._attributes.get(SENSOR_KEY.BODY_FAT.value) and self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value) and self._attributes.get("height") and self._attributes.get("gender") and self._attributes.get("age"):
+            scale = Scale(self._attributes.get("height"), self._attributes.get("gender"))
+            config = {}
+            config["scale"] = scale
+            metrics = {}
+            metrics[SENSOR_KEY.WEIGHT.value] = float(self._attributes.get(SENSOR_KEY.WEIGHT.value))
+            metrics[SENSOR_KEY.BODY_FAT.value] = float(self._attributes.get(SENSOR_KEY.BODY_FAT.value))
+            metrics[SENSOR_KEY.MUSCLE_MASS.value] = float(self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value))
+            metrics["age"] = int(self._attributes.get("age"))
+
+            _LOGGER.debug("age : " + str(metrics["age"]))
+
+            body_type = get_body_type(config, metrics)
+            self._attributes["body_type"] = body_type
+
+            ideal2weight = get_fat_mass_to_ideal_weight(config, metrics)
+            if ideal2weight < 0:
+                self._attributes["fat_mass_to_lose"] = ideal2weight * -1
+            else:
+                self._attributes["fat_mass_to_gain"] = ideal2weight * -1
+
+
+    @property
+    def device_info(self):
+        _LOGGER.debug("get device info")
+        """Information about this entity/device."""
+        return {
+            "identifiers": {(DOMAIN, self._device.device_id)},
+            "name": self._device.name,
+            "sw_version": self._device.firmware_version,
+            "model": self._device.model,
+            "manufacturer": self._device.manufacturer
+        }
+
+    @property
+    def extra_state_attributes(self):
+        return self._attributes
+
+    def set_state(self, state):
+        self._attr_state = state
+
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        # return self._state
+        return self._attr_state
 
 class Device:
     def __init__(self, hass, name, config, conf, device_type):
@@ -191,7 +261,16 @@ class Hub:
         self._recv_weight = False
         self._recv_imp = False
         self._current_id = 0
+        self.__mibody_entity = None
         self.setup()
+
+    @property
+    def mibody_entity(self):
+        return self.__mibody_entity
+
+    @mibody_entity.setter
+    def mibody_entity(self, entity):
+        self.__mibody_entity = entity
 
     def setup(self):
         for weight, devices in self._weight_devices.items():
@@ -376,6 +455,7 @@ class Hub:
         for desc in SENSORS_DESC:
             if desc.key == SENSOR_KEY.WEIGHT.value:
                 await device.get_sensor(desc.key).async_set_value(weight)
+                self.mibody_entity.set_extra_attribute(desc.key, weight)
             elif desc.key == SENSOR_KEY.IMPEDANCE.value:
                 await device.get_sensor(desc.key).async_set_value(imp)
             elif desc.key != SENSOR_KEY.STATUS.value and imp != 0:

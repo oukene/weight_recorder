@@ -56,6 +56,7 @@ CONF_WEIGHT = "weight"
 CONF_BMI = "bmi"
 CONF_DEFAULT_ENTITY_NAME = "weight"
 CONF_USE_MANUAL_INPUT = "manual_input"
+CONF_USE_MI_BODY_SCALE_CARD_ENTITY = "use_mibodyscalecard_entity"
 
 ATTR_CONF = "configure"
 

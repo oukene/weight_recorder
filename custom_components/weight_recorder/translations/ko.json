@@ -55,7 +55,8 @@
                     "gender": "\uc131\ubcc4\uc744 \uc785\ub825\ud558\uc138\uc694",
                     "admit_weight_range": "\uccb4\uc911 \uce21\uc815\uac12\uc758 \uc778\uc815\ubc94\uc704",
                     "admit_imp_range": "\uc800\ud56d(\uc784\ud53c\ub358\uc2a4)\uce21\uc815\uac12\uc758 \uc778\uc815\ubc94\uc704",
-                    "manual_input": "\uc218\ub3d9 \uc785\ub825 \uae30\ub2a5\uc744 \ud65c\uc131\ud654 \ud569\ub2c8\ub2e4"
+                    "manual_input": "\uc218\ub3d9 \uc785\ub825 \uae30\ub2a5\uc744 \ud65c\uc131\ud654 \ud569\ub2c8\ub2e4",
+                    "use_mibodyscalecard_entity": "body mi scale card \uc6a9 \uc5d4\ud2f0\ud2f0\ub97c \uc0dd\uc131\ud569\ub2c8\ub2e4"
                 }
             }
         }

@@ -308,6 +308,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         CONF_ADMIT_WEIGHT_RANGE: user_input[CONF_ADMIT_WEIGHT_RANGE],
                         CONF_ADMIT_IMP_RANGE: user_input[CONF_ADMIT_IMP_RANGE],
                         CONF_USE_MANUAL_INPUT: user_input[CONF_USE_MANUAL_INPUT],
+                        CONF_USE_MI_BODY_SCALE_CARD_ENTITY: user_input[CONF_USE_MI_BODY_SCALE_CARD_ENTITY],
                         "device_id": self._selected_profile,
                     }
                 else:
@@ -321,21 +322,30 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                         CONF_ADMIT_WEIGHT_RANGE: user_input[CONF_ADMIT_WEIGHT_RANGE],
                         CONF_ADMIT_IMP_RANGE: user_input[CONF_ADMIT_IMP_RANGE],
                         CONF_USE_MANUAL_INPUT: user_input[CONF_USE_MANUAL_INPUT],
+                        CONF_USE_MI_BODY_SCALE_CARD_ENTITY: user_input[CONF_USE_MI_BODY_SCALE_CARD_ENTITY],
                     }
 
                 self.data["modifydatetime"] = datetime.now()
                 return self.async_create_entry(title=self.config_entry.data[CONF_NAME], data=self.data)
 
+        _LOGGER.debug("selected conf : " + str(self._selected_conf))
+        if self._selected_conf != None and self._selected_conf.get(CONF_MODIFY_CONF):
+            conf = self._selected_conf.get(CONF_MODIFY_CONF)
+        else:
+            conf = self._selected_conf
+        _LOGGER.debug(
+            "use card : " + str(self._selected_conf.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY, False)))
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_NAME, default=self._selected_conf.get(CONF_NAME, None)): cv.string,
-                vol.Required(CONF_BIRTH, default=self._selected_conf.get(CONF_BIRTH, None)): selector.TextSelector(selector.TextSelectorConfig(type="date")),
-                vol.Required(CONF_HEIGHT, default=self._selected_conf.get(CONF_HEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="cm", mode="slider")),
-                vol.Required(CONF_WEIGHT, default=self._selected_conf.get(CONF_WEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="kg", mode="slider")),
-                vol.Required(CONF_GENDER, default=self._selected_conf.get(CONF_GENDER, GENDER[0])): selector.SelectSelector(selector.SelectSelectorConfig(options=GENDER, mode=selector.SelectSelectorMode.DROPDOWN, translation_key=CONF_GENDER)),
-                vol.Required(CONF_ADMIT_WEIGHT_RANGE, default=self._selected_conf.get(CONF_ADMIT_WEIGHT_RANGE, 5)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=20, step=0.1, unit_of_measurement="kg", mode="slider")),
-                vol.Required(CONF_ADMIT_IMP_RANGE, default=self._selected_conf.get(CONF_ADMIT_IMP_RANGE, 50)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=200, step=1, unit_of_measurement="Ω", mode="slider")),
-                vol.Required(CONF_USE_MANUAL_INPUT, default=True): selector.BooleanSelector(selector.BooleanSelectorConfig()),
+                vol.Required(CONF_NAME, default=conf.get(CONF_NAME, None)): cv.string,
+                vol.Required(CONF_BIRTH, default=conf.get(CONF_BIRTH, None)): selector.TextSelector(selector.TextSelectorConfig(type="date")),
+                vol.Required(CONF_HEIGHT, default=conf.get(CONF_HEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="cm", mode="slider")),
+                vol.Required(CONF_WEIGHT, default=conf.get(CONF_WEIGHT, 0)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=300, step=0.1, unit_of_measurement="kg", mode="slider")),
+                vol.Required(CONF_GENDER, default=conf.get(CONF_GENDER, GENDER[0])): selector.SelectSelector(selector.SelectSelectorConfig(options=GENDER, mode=selector.SelectSelectorMode.DROPDOWN, translation_key=CONF_GENDER)),
+                vol.Required(CONF_ADMIT_WEIGHT_RANGE, default=conf.get(CONF_ADMIT_WEIGHT_RANGE, 5)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=20, step=0.1, unit_of_measurement="kg", mode="slider")),
+                vol.Required(CONF_ADMIT_IMP_RANGE, default=conf.get(CONF_ADMIT_IMP_RANGE, 50)): selector.NumberSelector(selector.NumberSelectorConfig(min=0, max=200, step=1, unit_of_measurement="Ω", mode="slider")),
+                vol.Required(CONF_USE_MANUAL_INPUT, default=conf.get(CONF_USE_MANUAL_INPUT, False)): selector.BooleanSelector(selector.BooleanSelectorConfig()),
+                vol.Required(CONF_USE_MI_BODY_SCALE_CARD_ENTITY, default=conf.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY, False)): selector.BooleanSelector(selector.BooleanSelectorConfig()),
             }
         )
         return self.async_show_form(

@@ -16,6 +16,8 @@ from homeassistant.helpers import (
     entity_registry as er,
 )
 
+from operator import eq
+
 from datetime import datetime
 import math
 
@@ -36,7 +38,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
     for device_id, device in devices.items():
         #if device.device_type == DeviceType.PROFILE:
         for sensor_desc in SENSORS_DESC:
-            if device.device_type == DeviceType.HUB:
+            if eq(device.device_type, DeviceType.HUB):
                 if sensor_desc.key not in (SENSOR_KEY.WEIGHT.value, SENSOR_KEY.IMPEDANCE.value, SENSOR_KEY.STATUS.value):
                     continue
             elif device.device_type == DeviceType.PROFILE:
@@ -44,6 +46,11 @@ async def async_setup_entry(hass, entry, async_add_devices):
                     continue
             new_devices.append(WeightRecorderSensor(hass, entry.entry_id, device, sensor_desc),
         )
+
+    for device_id, device in devices.items():
+        if eq(device.device_type, DeviceType.PROFILE) and device.configure.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY):
+            _LOGGER.debug("create mibody scale entity")
+            new_devices.append(bodymiscale(hub, device))
 
     if new_devices:
         async_add_devices(new_devices)
@@ -174,6 +181,18 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                 _LOGGER.debug("value : " + str(self._value))
                 if value != None:
                     self._attributes.update(self.entity_description.attributes(value, self._device.configure))
+
+        if eq(self._device.device_type, DeviceType.PROFILE) and self._device.configure.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY):
+            if self.entity_description.key == SENSOR_KEY.WEIGHT.value:
+                self._hub.mibody_entity.set_extra_attribute("ideal", self._attributes.get("ideal", None))
+            elif self.entity_description.key == SENSOR_KEY.BMI.value:
+                self._hub.mibody_entity.set_extra_attribute("bmi_label", self._attributes.get("bmi_label", None))
+            
+            if self.entity_description.key == SENSOR_KEY.STATUS.value:
+                self._hub.mibody_entity.set_extra_attribute("problem", "ok")
+                self._hub.mibody_entity.set_state("ok")
+            else:
+                self._hub.mibody_entity.set_extra_attribute(self.entity_description.key, value)
 
         await self.async_update_ha_state(True)
 

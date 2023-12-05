@@ -55,7 +55,8 @@
                     "gender": "input gender",
                     "admit_weight_range": "admit range of weight measured values",
                     "admit_imp_range": "admit range of impedance measured values",
-                    "manual_input": "Activate manual input function"
+                    "manual_input": "Activate manual input function",
+                    "use_mibodyscalecard_entity": "Create an entity for body mi scale card"
                 }
             }
         }

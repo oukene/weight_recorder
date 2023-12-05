@@ -15,6 +15,15 @@ from homeassistant.helpers import (
 )
 import re
 
+from homeassistant.helpers.entity import EntityDescription
+from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.helpers.typing import StateType
+
+from custom_components.bodymiscale.metrics import BodyScaleMetricsHandler
+from custom_components.bodymiscale.models import Metric
+from custom_components.bodymiscale.util import get_age, get_bmi_label, get_ideal_weight
+
+
 _LOGGER = logging.getLogger(__name__)
 
 # List of platforms to support. There should be a matching .py file for each,
