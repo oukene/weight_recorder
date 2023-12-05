@@ -21,6 +21,7 @@ import time
 
 from custom_components.bodymiscale.metrics.scale import Scale
 from custom_components.bodymiscale.metrics import get_body_type, get_fat_mass_to_ideal_weight
+from homeassistant.helpers.entity import async_generate_entity_id
 
 
 def get_american_age(birthday, thatday):
@@ -110,7 +111,11 @@ class bodymiscale(Entity):
         super().__init__()
         self._device = device
         self._hub = hub
-        self.entity_id = "bodymiscale." + device.name
+
+        name = device._name_by_user if device._name_by_user else device.name
+
+        self.entity_id = async_generate_entity_id(
+            "bodymiscale" + ".{}", "{}".format(name), current_ids="")
 
         self._hub.mibody_entity = self
         self._attributes = {}
@@ -179,6 +184,7 @@ class Device:
         self._id = f"{name}_{config.entry_id}"
         # self._id = f"{name}_{config.entry_id}"
         self._name = name
+        self._name_by_user = None
         self._callbacks = set()
         self._loop = asyncio.get_event_loop()
         self._conf = conf.get(CONF_MODIFY_CONF) if conf.get(
@@ -197,7 +203,8 @@ class Device:
                           str(device_id) + ", name : " + str(modify_device_name))
             device_registry.async_update_device(
                 device_id, name_by_user=modify_device_name)
-
+            self._name_by_user = modify_device_name
+            
     def isHub(self) -> bool:
         return self._device_type == DeviceType.HUB
 
