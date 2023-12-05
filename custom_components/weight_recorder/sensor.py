@@ -175,6 +175,9 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
 
     async def async_set_value(self, value):
         self._value = value
+        if self.entity_description.display_precision:
+            _LOGGER.debug(str(self._value))
+            self._value = round(float(value), int(self.entity_description.display_precision))
         if self._device.device_type == DeviceType.PROFILE:
             if self.entity_description.attributes:
                 _LOGGER.debug("configure : " + str(self._device.configure))

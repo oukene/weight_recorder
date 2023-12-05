@@ -134,16 +134,16 @@ class bodymiscale(Entity):
         if eq(key, SENSOR_KEY.METABOLIC_AGE.value):
             self._attributes[key] = int(value)
         else:
-            self._attributes[key] = round(float(value)) if isNumber(value) else value
+            self._attributes[key] = round(float(value), 2) if isNumber(value) else value
 
         if self._attributes.get(SENSOR_KEY.WEIGHT.value) and self._attributes.get(SENSOR_KEY.BODY_FAT.value) and self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value) and self._attributes.get("height") and self._attributes.get("gender") and self._attributes.get("age"):
             scale = Scale(self._attributes.get("height"), self._attributes.get("gender"))
             config = {}
             config["scale"] = scale
             metrics = {}
-            metrics[SENSOR_KEY.WEIGHT.value] = round(float(self._attributes.get(SENSOR_KEY.WEIGHT.value)), 2)
-            metrics[SENSOR_KEY.BODY_FAT.value] = round(float(self._attributes.get(SENSOR_KEY.BODY_FAT.value)), 2)
-            metrics[SENSOR_KEY.MUSCLE_MASS.value] = round(float(self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value)), 2)
+            metrics[SENSOR_KEY.WEIGHT.value] = float(self._attributes.get(SENSOR_KEY.WEIGHT.value))
+            metrics[SENSOR_KEY.BODY_FAT.value] = float(self._attributes.get(SENSOR_KEY.BODY_FAT.value))
+            metrics[SENSOR_KEY.MUSCLE_MASS.value] = float(self._attributes.get(SENSOR_KEY.MUSCLE_MASS.value))
             metrics["age"] = int(self._attributes.get("age"))
 
             body_type = get_body_type(config, metrics)
