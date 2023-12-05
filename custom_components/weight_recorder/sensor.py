@@ -184,15 +184,15 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
 
         if eq(self._device.device_type, DeviceType.PROFILE) and self._device.configure.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY):
             if self.entity_description.key == SENSOR_KEY.WEIGHT.value:
-                self._hub.mibody_entity.set_extra_attribute("ideal", self._attributes.get("ideal", None))
+                self._hub.get_mibody_entity(self._device).set_extra_attribute("ideal", self._attributes.get("ideal", None))
             elif self.entity_description.key == SENSOR_KEY.BMI.value:
-                self._hub.mibody_entity.set_extra_attribute("bmi_label", self._attributes.get("bmi_label", None))
+                self._hub.get_mibody_entity(self._device).set_extra_attribute("bmi_label", self._attributes.get("bmi_label", None))
             
             if self.entity_description.key == SENSOR_KEY.STATUS.value:
-                self._hub.mibody_entity.set_extra_attribute("problem", "ok")
-                self._hub.mibody_entity.set_state("ok")
+                self._hub.get_mibody_entity(self._device).set_extra_attribute("problem", "ok")
+                self._hub.get_mibody_entity(self._device).set_state("ok")
             else:
-                self._hub.mibody_entity.set_extra_attribute(self.entity_description.key, value)
+                self._hub.get_mibody_entity(self._device).set_extra_attribute(self.entity_description.key, value)
 
         await self.async_update_ha_state(True)
 

@@ -112,12 +112,10 @@ class bodymiscale(Entity):
         self._device = device
         self._hub = hub
 
-        name = device._name_by_user if device._name_by_user else device.name
-
         self.entity_id = async_generate_entity_id(
-            "bodymiscale" + ".{}", "{}".format(name), current_ids="")
+            "bodymiscale" + ".{}", "{}".format(device.name), current_ids="")
 
-        self._hub.mibody_entity = self
+        self._hub.set_mibody_entity(device, self)
         self._attributes = {}
         self._attributes[CONF_HEIGHT] = self._device.configure.get(CONF_HEIGHT)
         self._attributes[CONF_GENDER] = self._device.configure.get(CONF_GENDER)
@@ -267,16 +265,14 @@ class Hub:
         self._recv_weight = False
         self._recv_imp = False
         self._current_id = 0
-        self.__mibody_entity = None
+        self.__mibody_entity = {}
         self.setup()
 
-    @property
-    def mibody_entity(self):
-        return self.__mibody_entity
+    def get_mibody_entity(self, device):
+        return self.__mibody_entity.get(device.name)
 
-    @mibody_entity.setter
-    def mibody_entity(self, entity):
-        self.__mibody_entity = entity
+    def set_mibody_entity(self, device, entity):
+        self.__mibody_entity[device.name] = entity
 
     def setup(self):
         for weight, devices in self._weight_devices.items():
