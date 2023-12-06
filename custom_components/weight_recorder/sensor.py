@@ -7,8 +7,8 @@ from homeassistant.helpers.event import async_track_state_change
 from homeassistant.components.sensor import (
     RestoreSensor, STATE_CLASS_MEASUREMENT,
 )
-from .hub import *
-from .hub import _is_valid_state, _in_range
+from .hub import bodymiscale, EntityBase, Device, _in_range, isNumber
+from homeassistant.const import STATE_UNKNOWN, STATE_UNAVAILABLE
 
 from homeassistant.helpers import (
     device_registry as dr,
@@ -27,16 +27,15 @@ _LOGGER = logging.getLogger(__name__)
 ENTITY_ID_FORMAT = "sensor" + ".{}"
 
 
-
 async def async_setup_entry(hass, entry, async_add_devices):
     """Add sensors for passed config_entry in HA."""
-        
+
     new_devices = []
     hub = hass.data[DOMAIN][entry.entry_id]["hub"]
     devices = hub.devices
 
     for device_id, device in devices.items():
-        #if device.device_type == DeviceType.PROFILE:
+        # if device.device_type == DeviceType.PROFILE:
         for sensor_desc in SENSORS_DESC:
             if eq(device.device_type, DeviceType.HUB):
                 if sensor_desc.key not in (SENSOR_KEY.WEIGHT.value, SENSOR_KEY.IMPEDANCE.value, SENSOR_KEY.STATUS.value):
@@ -45,7 +44,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
                 if sensor_desc.key in (SENSOR_KEY.STATUS.value):
                     continue
             new_devices.append(WeightRecorderSensor(hass, entry.entry_id, device, sensor_desc),
-        )
+                               )
 
     for device_id, device in devices.items():
         if eq(device.device_type, DeviceType.PROFILE) and device.configure.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY):
@@ -72,16 +71,16 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         self.hass = hass
         self._hub = hass.data[DOMAIN][entry_id]["hub"]
 
-        entity_name= device.configure.get(CONF_NAME)
+        entity_name = device.configure.get(CONF_NAME)
         if sensor_desc.key == SENSOR_KEY.WEIGHT.value:
             self._admit_range = device.configure.get(CONF_ADMIT_WEIGHT_RANGE)
         elif sensor_desc.key == SENSOR_KEY.IMPEDANCE.value:
            self._admit_range = device.configure.get(CONF_ADMIT_IMP_RANGE)
-        #elif sensor_desc.key == SENSOR_KEY.IMPEDANCE.value:
+        # elif sensor_desc.key == SENSOR_KEY.IMPEDANCE.value:
         #    self._admit_range = device.configure.get(CONF_ADMIT_IMP_RANGE)
         self.entity_id = async_generate_entity_id(
             ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, sensor_desc.key), current_ids="", hass=hass)
-        #self._name = "{}".format(sensor_desc.key)
+        # self._name = "{}".format(sensor_desc.key)
         self._value = None
         self._attributes = {}
         if self._device.device_type == DeviceType.PROFILE:
@@ -116,15 +115,15 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                 inch = height / 2.54
                 feet = math.floor(inch/12)
                 inch = round(inch - 12 * feet, 1)
-                self._attributes[ATTR_HEIGHT_FEET_INCH] = str(feet) + "'" + str(inch) + '"'
+                self._attributes[ATTR_HEIGHT_FEET_INCH] = str(
+                    feet) + "'" + str(inch) + '"'
 
                 date_time_obj = datetime.strptime(self._attributes.get(CONF_BIRTH), "%Y-%m-%d")
-                #age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
-                #_LOGGER.debug("age : " + str(age))
-                #self._attributes[ATTR_AGE] = age
-                
+                # age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
+                # _LOGGER.debug("age : " + str(age))
+                # self._attributes[ATTR_AGE] = age
 
-                _LOGGER.debug("calc BMI - weight : " + str(self._value) + ", height : " + str(height))
+                _LOGGER.debug("calc BMI - weight : " +str(self._value) + ", height : " + str(height))
                 bmi = float(self._value) / (float(height/100) * float(height/100))
                 self._attributes[ATTR_BMI] = bmi
                 bmi_state = None
@@ -142,7 +141,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                     bmi_state = "III_Obesity"
 
                 self._attributes[ATTR_BMI_STATE] = bmi_state
-            
+
     async def async_added_to_hass(self):
         await super().async_added_to_hass()
 
@@ -157,12 +156,12 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
             value = "Ready"
 
         await self.async_set_value(value)
-        #self._unit_of_measurement = old_state.native_unit_of_measurement
+        # self._unit_of_measurement = old_state.native_unit_of_measurement
 
         # entity = er.async_get(self.hass).async_get(self.entity_id)
         # self._device.set_device_id(entity.device_id)
         # _LOGGER.debug("set device id : " + str(entity.device_id))
-        #await self.async_update_ha_state(True)
+        # await self.async_update_ha_state(True)
 
         self._hub.add_weight_entity(self)
 
@@ -174,10 +173,12 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         return False
 
     async def async_set_value(self, value):
+        if value is None:
+            return
         self._value = value
         if self.entity_description.display_precision:
-            _LOGGER.debug(str(self._value))
-            self._value = round(float(value), int(self.entity_description.display_precision))
+            self._value = round(float(value), int(
+                self.entity_description.display_precision))
         if self._device.device_type == DeviceType.PROFILE:
             if self.entity_description.attributes:
                 _LOGGER.debug("configure : " + str(self._device.configure))
@@ -190,7 +191,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                 self._hub.get_mibody_entity(self._device).set_extra_attribute("ideal", self._attributes.get("ideal", None))
             elif self.entity_description.key == SENSOR_KEY.BMI.value:
                 self._hub.get_mibody_entity(self._device).set_extra_attribute("bmi_label", self._attributes.get("bmi_label", None))
-            
+
             if self.entity_description.key == SENSOR_KEY.STATUS.value:
                 self._hub.get_mibody_entity(self._device).set_extra_attribute("problem", "ok")
                 self._hub.get_mibody_entity(self._device).set_state("ok")

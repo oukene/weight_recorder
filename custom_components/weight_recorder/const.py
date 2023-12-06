@@ -98,6 +98,7 @@ class SENSOR_KEY(Enum):
     WATER = "water"
     VISCERAL_FAT = "visceral_fat"
     STATUS = "status"
+    LAST_RECORD_TIME = "last_record_time"
 
 
 SENSORS_DESC = [
@@ -200,4 +201,8 @@ SENSORS_DESC = [
         calculator=get_body_score,
         display_precision=0,
     ),
+    WeightSensorEntityDescription(
+        key=SENSOR_KEY.LAST_RECORD_TIME.value,
+        icon="mdi:clock",
+    )
 ]

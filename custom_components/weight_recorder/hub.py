@@ -107,6 +107,7 @@ class EntityBase(Entity):
         """Return entity specific state attributes."""
         return self._attributes
 
+
 class bodymiscale(Entity):
     def __init__(self, hub, device):
         super().__init__()
@@ -122,15 +123,14 @@ class bodymiscale(Entity):
         self._attributes[CONF_GENDER] = self._device.configure.get(CONF_GENDER)
 
         date_time_obj = datetime.strptime(self._device.configure.get(CONF_BIRTH), "%Y-%m-%d")
-        age = get_american_age(date_time_obj.strftime(
-            "%Y%m%d"), datetime.now().strftime('%Y%m%d'))
+        age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
         self._attributes["age"] = int(age)
         self._attr_state = "ok"
         self._attributes["problem"] = "ok"
 
     def set_extra_attribute(self, key, value):
         _LOGGER.debug("set attribute ")
-        
+
         if eq(key, SENSOR_KEY.METABOLIC_AGE.value):
             self._attributes[key] = int(value)
         else:
@@ -180,6 +180,7 @@ class bodymiscale(Entity):
         # return self._state
         return self._attr_state
 
+
 class Device:
     def __init__(self, hass, name, config, conf, device_type):
         self._id = f"{name}_{config.entry_id}"
@@ -205,7 +206,7 @@ class Device:
             device_registry.async_update_device(
                 device_id, name_by_user=modify_device_name)
             self._name_by_user = modify_device_name
-            
+
     def isHub(self) -> bool:
         return self._device_type == DeviceType.HUB
 
@@ -444,8 +445,7 @@ class Hub:
         scale = Scale(conf.get(CONF_HEIGHT), conf.get(CONF_GENDER))
         conf["scale"] = scale
         date_time_obj = datetime.strptime(conf.get(CONF_BIRTH), "%Y-%m-%d")
-        age = get_american_age(date_time_obj.strftime(
-            "%Y%m%d"), datetime.now().strftime('%Y%m%d'))
+        age = get_american_age(date_time_obj.strftime("%Y%m%d"), datetime.now().strftime('%Y%m%d'))
 
         if imp == 0:
             if last_imp := device.get_sensor(SENSOR_KEY.IMPEDANCE.value).state:
@@ -462,37 +462,14 @@ class Hub:
                 await device.get_sensor(desc.key).async_set_value(weight)
             elif desc.key == SENSOR_KEY.IMPEDANCE.value:
                 await device.get_sensor(desc.key).async_set_value(imp)
+            elif desc.key == SENSOR_KEY.LAST_RECORD_TIME.value:
+                date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                await device.get_sensor(desc.key).async_set_value(date)
             elif desc.key != SENSOR_KEY.STATUS.value and imp != 0:
                 result = desc.calculator(conf, metrics)
                 metrics[desc.key] = float(result)
 
                 await device.get_sensor(desc.key).async_set_value(float(result))
-
-                # if desc.key == SENSOR_KEY.BMI.value:
-                #     metrics["bmi"] = float(result)
-                # if desc.key == SENSOR_KEY.LEAN_BODY_MASS.value:
-                #     metrics["lean_body_mass"] = float(result)
-                # if desc.key == SENSOR_KEY.BODY_FAT.value:
-                #     metrics["body_fat"] = float(result)
-                # if desc.key == SENSOR_KEY.BONE_MASS.value:
-                #     metrics["bone_mass"] = float(result)
-                # if desc.key == SENSOR_KEY.MUSCLE_MASS.value:
-                #     metrics["muscle_mass"] = float(result)
-                # if desc.key == SENSOR_KEY.WATER.value:
-
-                # if desc.key == SENSOR_KEY.WATER.value:
-                #     metrics["water"] = float(result)
-
-        # bmr = get_bmr(conf, metrics)
-        # bmi = get_bmi(conf, metrics)
-        # fat_percent = scale.get_fat_percentage(age)
-
-        # _LOGGER.debug("bmr : " + str(bmr))
-        # _LOGGER.debug("fat percent : " + str(fat_percent))
-
-        # for desc in SENSORS_DESC:
-        #     if result.get(desc.key):
-        #         await device.get_sensor(desc.key).async_set_value(result.get(desc.key))
         """"""
 
     async def record_data(self):
@@ -500,7 +477,7 @@ class Hub:
         time = self.unrecorded_entity.current_option.split(",")[0]
         weight = self.unrecorded_entity.current_option.split(",")[1]
         imp = self.unrecorded_entity.current_option.split(",")[2]
-        
+
         for entity_id, profile in self.profile_list_entity._profiles.items():
             if profile == self.profile_list_entity.current_option:
                 for device_id, device in self.devices.items():

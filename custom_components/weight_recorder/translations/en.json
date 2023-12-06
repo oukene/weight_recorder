@@ -138,6 +138,9 @@
             },
             "status": {
                 "name": "status"
+            },
+            "last_record_time": {
+                "name": "Last measurement time"
             }
         },
         "number": {
