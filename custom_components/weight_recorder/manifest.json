@@ -4,9 +4,6 @@
   "config_flow": true,
   "documentation": "https://github.com/oukene/weight_recorder",
   "requirements": [],
-  "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
   "dependencies": ["bodymiscale"],
   "codeowners": [
     "@oukene"

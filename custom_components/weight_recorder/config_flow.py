@@ -198,7 +198,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
                 self.data[CONF_WEIGHT_DEVICES][user_input[CONF_WEIGHT_ENTITY]] = {
                     CONF_WEIGHT_ENTITY: user_input[CONF_WEIGHT_ENTITY],
-                    CONF_IMP_ENTITY: user_input[CONF_IMP_ENTITY],
+                    CONF_IMP_ENTITY: user_input.get(CONF_IMP_ENTITY, None),
                     #CONF_DEVICE_TYPE: user_input[CONF_DEVICE_TYPE],
                 }
 
