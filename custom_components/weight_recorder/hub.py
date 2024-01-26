@@ -13,7 +13,6 @@ from decimal import Decimal
 
 from homeassistant.helpers import (
     device_registry as dr,
-    entity_platform,
     entity_registry as er,
 )
 

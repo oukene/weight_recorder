@@ -6,8 +6,6 @@ from datetime import datetime
 
 import homeassistant.helpers.config_validation as cv
 
-import homeassistant.helpers.entity_registry
-
 from .const import *
 from homeassistant.helpers import selector
 from homeassistant import config_entries, exceptions
@@ -15,7 +13,6 @@ from homeassistant.core import callback
 
 from homeassistant.helpers import (
     device_registry as dr,
-    entity_platform,
     entity_registry as er,
 )
 

@@ -5,7 +5,7 @@ from .const import *
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.components.sensor import (
-    RestoreSensor, STATE_CLASS_MEASUREMENT,
+    RestoreSensor,
 )
 from .hub import bodymiscale, EntityBase, Device, _in_range, isNumber
 from homeassistant.const import STATE_UNKNOWN, STATE_UNAVAILABLE
@@ -58,7 +58,7 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WeightRecorderSensor(EntityBase, RestoreSensor):
     """Representation of a Thermal Comfort Sensor."""
 
-    _attr_state_class = STATE_CLASS_MEASUREMENT
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_has_entity_name = True
     entity_description: WeightSensorEntityDescription
 
