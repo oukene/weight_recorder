@@ -5,7 +5,6 @@ from homeassistant.const import (
 
 from .const import *
 from homeassistant.helpers.entity import async_generate_entity_id
-from homeassistant.helpers.event import async_track_state_change
 from homeassistant.components.number import NumberEntity, NumberMode
 from .hub import *
 

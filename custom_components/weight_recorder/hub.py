@@ -6,7 +6,8 @@ from .const import *
 from homeassistant.components.sensor import SensorExtraStoredData, RestoreSensor
 from homeassistant.helpers.entity import Entity
 import logging
-from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.core import Event, EventStateChangedData, callback
 from homeassistant.const import STATE_UNKNOWN, STATE_UNAVAILABLE, EVENT_HOMEASSISTANT_STARTED, ATTR_UNIT_OF_MEASUREMENT
 
 from decimal import Decimal
@@ -280,10 +281,10 @@ class Hub:
     def setup(self):
         for weight, devices in self._weight_devices.items():
             self.hass.data[DOMAIN][self.entry.entry_id]["listener"].append(
-                async_track_state_change(self.hass, weight, self.entity_listener))
+                async_track_state_change_event(self.hass, weight, self.entity_listener))
             if devices.get(CONF_IMP_ENTITY, None):
                 self.hass.data[DOMAIN][self.entry.entry_id]["listener"].append(
-                    async_track_state_change(self.hass, devices.get(CONF_IMP_ENTITY), self.imp_entity_listener))
+                    async_track_state_change_event(self.hass, devices.get(CONF_IMP_ENTITY), self.imp_entity_listener))
 
         # self.hass.bus.async_listen_once(
         #    EVENT_HOMEASSISTANT_STARTED, self.hass_load_end)
@@ -294,12 +295,20 @@ class Hub:
         # _LOGGER.debug("hass load end!!")
         # self._hass_load_end = True
 
-    async def imp_entity_listener(self, entity, old_state, new_state: SensorExtraStoredData):
+    @callback
+    async def imp_entity_listener(self, event: Event):
+        entity = event.data["entity_id"]
+        old_state = event.data["old_state"]
+        new_state = event.data["new_state"]
         if _is_valid_state(new_state) and self._recv_weight:
             self._recv_imp = True
             self._last_imp_time = datetime.now().timestamp()
 
-    async def entity_listener(self, entity, old_state, new_state: SensorExtraStoredData):
+    @callback
+    async def entity_listener(self, event: Event):
+        entity = event.data["entity_id"]
+        old_state = event.data["old_state"]
+        new_state = event.data["new_state"]
         if not _is_valid_state(new_state) or Decimal(new_state.state) == Decimal(0) or self._recv_weight:
             # if not _is_valid_state(new_state) or self.last_weight == new_state.state or Decimal(new_state.state) == Decimal(0):
             return
@@ -366,7 +375,8 @@ class Hub:
 
         self._recv_imp = False
         self._recv_weight = False
-        await self.profile_list_entity.async_select_option("-")
+        if self.profile_list_entity:
+            await self.profile_list_entity.async_select_option("-")
         # for device_id, device in self.devices.items():
         #     if device.device_type == DeviceType.HUB:
         #         await device.get_sensor(SENSOR_KEY.STATUS.value).async_set_value("Ready")

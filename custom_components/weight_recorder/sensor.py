@@ -3,7 +3,6 @@ import logging
 from dataclasses import dataclass
 from .const import *
 from homeassistant.helpers.entity import async_generate_entity_id
-from homeassistant.helpers.event import async_track_state_change
 from homeassistant.components.sensor import (
     RestoreSensor,
 )

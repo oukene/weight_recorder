@@ -70,7 +70,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             if re.search("_Hub", str(dr.async_get(hass).async_get(e.device_id).name)):
                 er.async_get(hass).async_update_entity(e.entity_id, hidden_by=None)
         else:
-            if re.search("_Hub", str(dr.async_get(hass).async_get(e.device_id).name)) and e.translation_key != SENSOR_KEY.WEIGHT:
+            if re.search("_Hub", str(dr.async_get(hass).async_get(e.device_id).name)) and (e.translation_key not in (SENSOR_KEY.WEIGHT.value, SENSOR_KEY.STATUS.value, SENSOR_KEY.IMPEDANCE.value)):
                 er.async_get(hass).async_update_entity(e.entity_id, hidden_by=er.RegistryEntryHider.USER)
 
     # This creates each HA object for each platform your device requires.
