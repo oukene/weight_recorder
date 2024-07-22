@@ -86,20 +86,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hub.add_device(device)
         #device = Device(entry.data[CONF_NAME]+"manager", entry, {})
 
-    all(
-        await asyncio.gather(
-            *[
-                hass.async_create_task(
-                    hass.config_entries.async_forward_entry_setup(entry, component))
-                for component in PLATFORMS_1
-            ]
-        )
-    )
+    # all(
+    #     await asyncio.gather(
+    #         *[
+    #             hass.async_create_task(
+    #                 hass.config_entries.async_forward_entry_setup(entry, component))
+    #             for component in PLATFORMS_1
+    #         ]
+    #     )
+    # )
 
-    for component in PLATFORMS_2:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, component)
-        )
+    # for component in PLATFORMS_2:
+    #     hass.async_create_task(
+    #         hass.config_entries.async_forward_entry_setup(entry, component)
+    #     )
+
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS_1)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS_2)
 
     return True
 
