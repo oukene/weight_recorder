@@ -13,6 +13,7 @@ from homeassistant.helpers import (
     entity_registry as er,
 )
 
+from operator import eq
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +40,9 @@ async def async_setup_entry(hass, entry, async_add_devices):
 
     for device_id, device in devices.items():
         if not device.isHub() and device.configure.get(CONF_USE_MANUAL_INPUT, False):
-            s = WeightRecorderNumber(hass, entry.entry_id, device, translation_key=TRANS_KEY_MANUAL_INPUT)
+            s = WeightRecorderNumber(hass, entry.entry_id, device, "kg", translation_key=TRANS_KEY_MANUAL_INPUT_WEIGHT)
+            new_devices.append(s)
+            s = WeightRecorderNumber(hass, entry.entry_id, device, "cm", translation_key=TRANS_KEY_MANUAL_INPUT_HEIGHT)
             new_devices.append(s)
 
     if new_devices:
@@ -49,16 +52,16 @@ async def async_setup_entry(hass, entry, async_add_devices):
 class WeightRecorderNumber(EntityBase, NumberEntity):
     """Representation of a Thermal Comfort Sensor."""
 
-    def __init__(self, hass, entry_id, device, translation_key):
+    def __init__(self, hass, entry_id, device, unit, translation_key):
         """Initialize the sensor."""
         super().__init__(device, translation_key=translation_key)
         self.entry_id = entry_id
         self.hass = hass
 
         self.entity_id = async_generate_entity_id(
-            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, "manual input"), current_ids="", hass=hass)
-        self._name = "{}".format("manual input")
-        self._unit_of_measurement = "kg"
+            ENTITY_ID_FORMAT, "{}_{}".format(self._device.name, translation_key), current_ids="", hass=hass)
+        self._name = "{}".format(translation_key)
+        self._unit_of_measurement = unit
         self._value = 0
         self._attributes = {}
         self._unique_id = self.entity_id
@@ -95,6 +98,10 @@ class WeightRecorderNumber(EntityBase, NumberEntity):
         return self._unit_of_measurement
 
     async def async_set_native_value(self, value: float) -> None:
-        await self._device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(value)
-        self._value = None
+        if eq(self._translation_key, TRANS_KEY_MANUAL_INPUT_WEIGHT):
+            await self._device.get_sensor(SENSOR_KEY.WEIGHT.value).async_set_value(value)
+        elif eq(self._translation_key, TRANS_KEY_MANUAL_INPUT_HEIGHT):
+            await self._device.get_sensor(SENSOR_KEY.HEIGHT.value).async_set_value(value)
+
+        self._value = value
         await self.async_update_ha_state()

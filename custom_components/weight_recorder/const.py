@@ -21,7 +21,8 @@ NAME = "Weight Recorder"
 VERSION = "1.0.5"
 MANUFACTURE = "oukene"
 
-TRANS_KEY_MANUAL_INPUT = "manual_input"
+TRANS_KEY_MANUAL_INPUT_WEIGHT = "manual_input_weight"
+TRANS_KEY_MANUAL_INPUT_HEIGHT = "manual_input_height"
 TRANS_KEY_UNRECORDED_DATA = "unrecorded_data"
 TRANS_KEY_PROFILE_LIST = "profile_list"
 TRANS_KEY_UNRECORDED_INPUT = "unrecorded_input"
@@ -85,6 +86,7 @@ class WeightSensorEntityDescription(
 
 class SENSOR_KEY(Enum):
     WEIGHT = "weight"
+    HEIGHT = "height"
     IMPEDANCE = "impedance"
     BASAL_METABOLISM = "basal_metabolism"
     BODY_FAT = "body_fat"
@@ -112,6 +114,14 @@ SENSORS_DESC = [
         state_class=SensorStateClass.MEASUREMENT,
         display_precision=2,
         attributes=lambda _, config: {ATTR_IDEAL: get_ideal_weight(config)},
+    ),
+    WeightSensorEntityDescription(
+        key=SENSOR_KEY.HEIGHT.value,
+        native_unit_of_measurement="cm",
+        icon="mdi:human-male-height-variant",
+        device_class=SensorDeviceClass.DISTANCE,
+        state_class=SensorStateClass.MEASUREMENT,
+        display_precision=1,
     ),
     WeightSensorEntityDescription(
         key=SENSOR_KEY.IMPEDANCE.value,

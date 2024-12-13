@@ -144,8 +144,11 @@
             }
         },
         "number": {
-            "manual_input": {
-                "name": "manual recording"
+            "manual_input_height": {
+                "name": "manual recording height"
+            },
+            "manual_input_weight": {
+                "name": "manual recording weight"
             }
         },
         "select": {

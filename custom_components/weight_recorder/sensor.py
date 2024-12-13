@@ -83,7 +83,7 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         self._value = None
         self._attributes = {}
         if self._device.device_type == DeviceType.PROFILE:
-            self._attributes[ATTR_HEIGHT] = device.configure.get(CONF_HEIGHT)
+            #self._attributes[ATTR_HEIGHT] = device.configure.get(CONF_HEIGHT)
             self._attributes[ATTR_BIRTH] = device.configure.get(CONF_BIRTH)
 
         self._device.set_sensor(self.entity_description.key, self)
@@ -147,6 +147,8 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
         value = None
         if self.entity_description.key == SENSOR_KEY.WEIGHT.value:
             value = self._device.configure.get(CONF_WEIGHT)
+        if self.entity_description.key == SENSOR_KEY.HEIGHT.value:
+            value = self._device.configure.get(CONF_HEIGHT)
         old_state = await self.async_get_last_sensor_data()
         if old_state != None and old_state.native_value != None:
             value = old_state.native_value
@@ -186,7 +188,10 @@ class WeightRecorderSensor(EntityBase, RestoreSensor):
                     self._attributes.update(self.entity_description.attributes(value, self._device.configure))
 
         if eq(self._device.device_type, DeviceType.PROFILE) and self._device.configure.get(CONF_USE_MI_BODY_SCALE_CARD_ENTITY):
-            if self.entity_description.key == SENSOR_KEY.WEIGHT.value:
+            if eq(self.entity_description.key, SENSOR_KEY.WEIGHT.value):
+                self._hub.get_mibody_entity(self._device).set_extra_attribute("ideal", self._attributes.get("ideal", None))
+            elif eq(self.entity_description.key, SENSOR_KEY.HEIGHT.value):
+                self._hub.get_mibody_entity(self._device).set_extra_attribute("height", self._value)
                 self._hub.get_mibody_entity(self._device).set_extra_attribute("ideal", self._attributes.get("ideal", None))
             elif self.entity_description.key == SENSOR_KEY.BMI.value:
                 self._hub.get_mibody_entity(self._device).set_extra_attribute("bmi_label", self._attributes.get("bmi_label", None))

@@ -129,7 +129,7 @@ class bodymiscale(Entity):
         self._attributes["problem"] = "ok"
 
     def set_extra_attribute(self, key, value):
-        _LOGGER.debug("set attribute ")
+        _LOGGER.debug("set attribute key : " + str(key) + ", value : " + str(value))
 
         if eq(key, SENSOR_KEY.METABOLIC_AGE.value):
             self._attributes[key] = int(value)

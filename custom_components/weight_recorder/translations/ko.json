@@ -144,8 +144,11 @@
             }
         },
         "number": {
-            "manual_input": {
-                "name": "\uc218\ub3d9 \uae30\ub85d"
+            "manual_input_height": {
+                "name": "\ud0a4 \uc218\ub3d9\uae30\ub85d"
+            },
+            "manual_input_weight": {
+                "name": "\uccb4\uc911 \uc218\ub3d9\uae30\ub85d"
             }
         },
         "select": {
