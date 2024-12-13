@@ -76,7 +76,7 @@ class EntityBase(Entity):
         return {
             "identifiers": {(DOMAIN, self._device.device_id)},
             "name": self._device.name,
-            "sw_version": self._device.firmware_version,
+            #"sw_version": self._device.firmware_version,
             "model": self._device.model,
             "manufacturer": self._device.manufacturer
         }
@@ -162,7 +162,7 @@ class bodymiscale(Entity):
         return {
             "identifiers": {(DOMAIN, self._device.device_id)},
             "name": self._device.name,
-            "sw_version": self._device.firmware_version,
+            #"sw_version": self._device.firmware_version,
             "model": self._device.model,
             "manufacturer": self._device.manufacturer
         }
@@ -191,7 +191,7 @@ class Device:
         self._loop = asyncio.get_event_loop()
         self._conf = conf.get(CONF_MODIFY_CONF) if conf.get(
             CONF_MODIFY_CONF) else conf
-        self.firmware_version = VERSION
+        #self.firmware_version = VERSION
         self.model = NAME
         self.manufacturer = MANUFACTURE
         self.__sensors = {}
