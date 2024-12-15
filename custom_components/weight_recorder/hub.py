@@ -474,7 +474,7 @@ class Hub:
             elif desc.key == SENSOR_KEY.LAST_RECORD_TIME.value:
                 date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 await device.get_sensor(desc.key).async_set_value(date)
-            elif desc.key != SENSOR_KEY.STATUS.value and imp != 0:
+            elif desc.key not in (SENSOR_KEY.STATUS.value, SENSOR_KEY.HEIGHT.value) and imp != 0:
                 result = desc.calculator(conf, metrics)
                 metrics[desc.key] = float(result)
 
